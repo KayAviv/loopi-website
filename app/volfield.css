@@ -1,0 +1,112 @@
+/* LOOPI — Volfield styling. Loaded after games.css.
+ * The scene is the star (Kay's reference: cratered moonscape,
+ * orange line, alien boss): the HUD stays small, frosted and
+ * warm-toned up top — amber shield bar in the yellow-block
+ * family, orange claimed counter matching the line. */
+
+/* ---------- mode bar + stage row ---------- */
+.vf-bar{margin:12px 18px 0}
+.vf-stage-row{display:flex;align-items:center;gap:8px;margin:10px 18px 0;
+  background:linear-gradient(165deg,rgba(255,255,255,.92),rgba(255,251,240,.75) 55%,rgba(255,246,230,.65));
+  border:1px solid rgba(37,52,63,.10);border-radius:16px;padding:7px 8px;
+  backdrop-filter:blur(16px) saturate(1.5);-webkit-backdrop-filter:blur(16px) saturate(1.5);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 10px 24px rgba(170,110,30,.18)}
+.vf-stage-row.hidden{display:none}
+.vf-stage-name{flex:1;text-align:center;font-weight:800;font-size:.95rem;color:var(--ink);letter-spacing:.01em}
+.vf-nav-btn{flex:0 0 auto;width:34px;height:34px;border-radius:11px;border:1px solid rgba(37,52,63,.12);
+  background:linear-gradient(180deg,#ffffff,rgba(255,243,226,.7));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 4px 10px rgba(170,110,30,.2);
+  color:var(--ink);font-size:1.15rem;line-height:1;cursor:pointer}
+.vf-nav-btn:active{transform:scale(.94)}
+.vf-nav-btn:disabled{opacity:.35;cursor:default}
+.vf-best{margin:6px 18px 0;text-align:center;font-size:.78rem;color:#b97e0c;
+  font-family:"IBM Plex Mono",monospace;min-height:1em}
+
+/* ---------- HUD chips ---------- */
+.vf-hud{display:flex;gap:8px;margin:10px 18px 0;flex-wrap:wrap}
+.vf-chip{flex:1;text-align:center;
+  background:linear-gradient(165deg,rgba(255,255,255,.92),rgba(255,251,240,.75) 55%,rgba(255,246,230,.65));
+  border:1px solid rgba(37,52,63,.10);border-radius:14px;padding:7px 4px;
+  font-size:.85rem;white-space:nowrap;color:var(--ink);
+  backdrop-filter:blur(16px) saturate(1.5);-webkit-backdrop-filter:blur(16px) saturate(1.5);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 8px 20px rgba(170,110,30,.16)}
+.vf-chip b{font-size:1.02rem;font-family:"IBM Plex Mono",monospace}
+#vf-pct{font-size:1.42rem;font-weight:900;line-height:1;
+  background:linear-gradient(92deg,#ffc44d 5%,#ff7d1f 95%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;
+  filter:drop-shadow(0 0 10px rgba(255,150,50,.35))}
+.vf-chip.hidden{display:none}
+.vf-lives-chip{display:flex;align-items:center;justify-content:center;gap:3px}
+.heart-ic{width:19px;height:19px;color:#fb4d6d;
+  filter:drop-shadow(0 2px 6px rgba(244,63,94,.35))}
+.heart-ic.off{color:rgba(37,52,63,.16);filter:none}
+
+/* ---------- stage banner ---------- */
+#vf-stage-label{text-align:center;font-weight:800;font-size:.82rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--soft);margin:10px 18px 0}
+
+/* ---------- shield meter: glowing energy bar ---------- */
+.vf-shield{display:flex;align-items:center;gap:9px;margin:10px 18px 0;
+  font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#b97e0c}
+.vf-shield-track{flex:1;height:11px;border-radius:99px;background:#f6e7c8;overflow:hidden;
+  border:1px solid rgba(37,52,63,.10);
+  box-shadow:inset 0 2px 5px rgba(170,110,30,.25)}
+#vf-shield-fill{height:100%;width:100%;border-radius:99px;position:relative;
+  background:linear-gradient(90deg,#f59e0b,#ffb340 55%,#ffe29a);
+  box-shadow:0 0 12px rgba(255,170,60,.85),inset 0 1px 0 rgba(255,255,255,.75),inset 0 -2px 3px rgba(150,80,0,.45);
+  transition:width .15s linear}
+#vf-shield-fill::after{content:'';position:absolute;inset:0;border-radius:99px;
+  background:linear-gradient(105deg,transparent 20%,rgba(255,255,255,.55) 50%,transparent 80%);
+  background-size:220% 100%;animation:vf-shimmer 2.6s linear infinite}
+@keyframes vf-shimmer{from{background-position:180% 0}to{background-position:-80% 0}}
+#vf-shield-fill.low{background:linear-gradient(90deg,#ff3d5e,#ff7a4d 60%,#ffb340);
+  box-shadow:0 0 14px rgba(255,90,70,.9),inset 0 1px 0 rgba(255,255,255,.7),inset 0 -2px 3px rgba(160,20,0,.5);
+  animation:vf-lowpulse 0.9s ease-in-out infinite}
+@keyframes vf-lowpulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.35)}}
+
+/* ---------- duel split-progress ---------- */
+.vf-duel-bar{margin:10px 18px 0;display:flex;flex-direction:column;gap:6px}
+.vf-duel-bar.hidden{display:none}
+.vf-duel-row{display:flex;align-items:center;gap:8px;font-size:.78rem;font-weight:800}
+.vf-duel-row .who{flex:0 0 74px;color:var(--soft)}
+.vf-duel-row .val{flex:0 0 40px;text-align:right;font-family:"IBM Plex Mono",monospace}
+.vf-duel-track{flex:1;height:10px;border-radius:99px;background:#f6e7c8;overflow:hidden;
+  border:1px solid rgba(37,52,63,.10);box-shadow:inset 0 2px 5px rgba(170,110,30,.25)}
+#vf-you-fill{height:100%;width:0%;border-radius:99px;
+  background:linear-gradient(90deg,#39c2a5,#57d9a3);
+  box-shadow:0 0 10px rgba(60,200,160,.6),inset 0 1px 0 rgba(255,255,255,.65);
+  transition:width .2s linear}
+#vf-bot-fill{height:100%;width:0%;border-radius:99px;
+  background:linear-gradient(90deg,#ff5f92,#ff3d5e);
+  box-shadow:0 0 10px rgba(255,80,120,.75),inset 0 1px 0 rgba(255,255,255,.6);
+  transition:width .2s linear}
+#vf-bot-fill.flash{filter:brightness(1.8)}
+
+/* ---------- arena frame ---------- */
+.vf-wrap{margin:12px 18px 0;border-radius:20px;overflow:hidden;
+  border:1px solid rgba(37,52,63,.12);
+  box-shadow:0 26px 52px rgba(170,110,30,.28),0 0 46px rgba(255,150,50,.12),
+    inset 0 1px 0 rgba(255,255,255,.5)}
+#vf-canvas{display:block;width:100%;height:auto;touch-action:none;background:#f7ead9}
+
+/* ---------- message + result + controls ---------- */
+#vf-msg{text-align:center}
+.vf-controls{display:flex;gap:8px;margin:10px 18px 0}
+.vf-controls .primary{flex:1}
+.vf-controls .ghost{flex:1}
+
+/* ---------- steering pad ---------- */
+.vf-pad{display:grid;grid-template-columns:repeat(3,54px);grid-template-rows:repeat(2,54px);
+  gap:6px;justify-content:center;margin:14px auto 2px;width:max-content}
+.vf-pad-btn{border-radius:15px;border:1px solid rgba(37,52,63,.12);cursor:pointer;
+  background:linear-gradient(180deg,#ffffff,rgba(255,243,226,.75));
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:var(--ink);
+  display:flex;align-items:center;justify-content:center;touch-action:none;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 6px 16px rgba(170,110,30,.2)}
+.vf-pad-btn:active{background:linear-gradient(180deg,rgba(255,150,80,.4),rgba(255,107,74,.18));
+  border-color:rgba(255,107,74,.55);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 0 16px rgba(255,150,60,.4)}
+.vf-pad-btn svg{width:24px;height:24px}
+.vf-pad-up{grid-column:2;grid-row:1}
+.vf-pad-left{grid-column:1;grid-row:2}
+.vf-pad-down{grid-column:2;grid-row:2}
+.vf-pad-right{grid-column:3;grid-row:2}
