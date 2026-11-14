@@ -1,0 +1,126 @@
+/* LOOPI — games styling, "Summer Light" language (2026-11-13):
+ * sky/sand game courts, coral #ff6b4a, gold #d9930d,
+ * IBM Plex Mono scores, 16px white cards with sand hairlines.
+ * Loaded after style.css. Pure presentation. */
+
+/* ---------- online bars (pong / foodninja) ---------- */
+.pong-online{margin:12px 18px 0;background:#ffffff;border:1px solid var(--line);border-radius:16px;padding:12px}
+.po-modes{display:flex;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px}
+.po-mode{flex:1;background:none;border:0;color:var(--soft);border-radius:9px;padding:8px 0;
+  font-weight:800;font-size:.8rem;cursor:pointer}
+.po-mode.active{background:var(--lime);color:#fff}
+.po-panel{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+.po-row{display:flex;gap:8px}
+.po-row .ghost{flex:1}
+.po-row input{flex:1;background:#ffffff;border:1px solid var(--line2);border-radius:10px;
+  color:var(--ink);padding:9px 10px;font-size:1rem;font-weight:800;letter-spacing:.35em;
+  text-transform:uppercase;min-width:0;font-family:"IBM Plex Mono",monospace}
+.po-row input:focus{outline:none;border-color:var(--lime-line);box-shadow:0 0 0 3px rgba(255,107,74,.16)}
+.po-code-display{text-align:center;font-size:.9rem;color:var(--soft);
+  background:var(--lime-bg);border:1px dashed var(--lime-line);border-radius:10px;padding:8px}
+.po-code-display b{color:var(--lime);font-size:1.25rem;letter-spacing:.3em;margin:0 2px;font-family:"IBM Plex Mono",monospace}
+.po-status{margin:0;font-size:.82rem;color:var(--soft);line-height:1.45;min-height:1.1em;text-align:center}
+#po-leave{width:100%}
+.po-online-active .pong-controls{display:none}
+
+/* ---------- pong table frame (board: dark pitch, lime hairline) ---------- */
+.pong-wrap{border:1px solid var(--line2);border-radius:12px;overflow:hidden;
+  box-shadow:0 0 24px rgba(255,170,60,.12)}
+#pong-canvas{background:#cdeffb}
+
+/* ---------- games hub cards ---------- */
+.game-card{transition:transform .16s ease,border-color .16s ease}
+.game-card:hover{transform:translateY(-2px);border-color:var(--lime-line)}
+.game-art{overflow:hidden}
+.game-art::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.16) 48%,transparent 62%);
+  transform:translateX(-110%);animation:gameShine 4.5s ease-in-out infinite}
+@keyframes gameShine{0%,55%{transform:translateX(-110%)}85%,100%{transform:translateX(110%)}}
+
+/* ---------- penalty kicks (board goal: white frame, lime tint) ---------- */
+#panel-game-penalty .game-stage{position:relative}
+.pk-goal{position:relative;display:block;height:238px;padding:0;cursor:crosshair;touch-action:none;
+  user-select:none;-webkit-user-select:none;
+  border:2.5px solid rgba(255,255,255,.85);border-bottom:0;border-radius:10px 10px 0 0;
+  background:
+    repeating-linear-gradient(0deg,rgba(37,52,63,.07) 0 1px,transparent 1px 16px),
+    repeating-linear-gradient(90deg,rgba(37,52,63,.07) 0 1px,transparent 1px 16px),
+    linear-gradient(to bottom,rgba(255,255,255,.35),rgba(255,255,255,.05)),#bfe6f7;
+  box-shadow:inset 0 0 22px rgba(70,140,190,.25)}
+.pk-keeper{position:absolute;z-index:2;font-size:2.5rem;line-height:1;pointer-events:none;
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,.55))}
+.pk-ball{position:absolute;z-index:3;font-size:1.35rem;line-height:1;pointer-events:none;
+  filter:drop-shadow(0 3px 6px rgba(0,0,0,.5))}
+.pk-aim{position:absolute;z-index:4;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;
+  border:2px solid rgba(247,201,72,.95);background:rgba(247,201,72,.22);pointer-events:none;
+  box-shadow:0 0 12px rgba(247,201,72,.5)}
+.pk-power{display:flex;align-items:center;gap:9px;margin:10px 2px 0;font-size:.72rem;font-weight:800;
+  letter-spacing:.08em;text-transform:uppercase;color:#f7c948;font-family:"IBM Plex Mono",monospace}
+.pk-power-track{flex:1;height:6px;border-radius:99px;background:#f6e7c8;overflow:hidden}
+#pk-power-fill{height:100%;width:0%;border-radius:99px;background:var(--lime);transition:width .05s linear}
+#pk-power-fill.warm{background:#ffb020}
+#pk-power-fill.hot{background:#ff5470}
+
+/* ---------- foodninja ---------- */
+.food-wrap{margin:8px 18px 0;border-radius:12px;overflow:hidden;border:1px solid var(--line2);
+  box-shadow:0 0 24px rgba(255,170,60,.12)}
+#fn-canvas{display:block;width:100%;height:auto;background:#cdeffb;touch-action:none}
+.fn-bar{margin:12px 18px 0}
+.fn-diff-row{display:flex;gap:4px;margin-top:10px;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:4px}
+.fn-diff-btn{flex:1;padding:8px 6px;border-radius:9px;border:0;background:none;
+  color:var(--soft);font-weight:800;font-size:.83rem;cursor:pointer}
+.fn-diff-btn.active{background:var(--lime);color:#fff}
+.fn-hud{display:flex;gap:8px;margin:10px 18px 0;flex-wrap:wrap}
+.fn-chip{flex:1;text-align:center;background:#ffffff;border:1px solid var(--line);
+  border-radius:10px;padding:6px 4px;font-size:.85rem;white-space:nowrap}
+.fn-chip b{font-size:1rem;font-family:"IBM Plex Mono",monospace}
+.fn-meter{position:relative;height:6px;margin:10px 18px 0;border-radius:99px;background:#f6e7c8;overflow:visible}
+#fn-meter-fill{height:100%;width:0%;background:var(--lime);border-radius:99px;transition:width .12s ease}
+#fn-fever-tag{position:absolute;right:0;top:-16px;font-size:.68rem;font-weight:900;color:var(--gold);
+  letter-spacing:.05em}
+#panel-game-foodninja.fn-online-active #fn-controls{display:none}
+
+/* ---------- challenge cards + picker ---------- */
+.msg-challenge{border:1px solid #ecd28a;border-radius:14px;background:#fffaf0;
+  box-shadow:0 4px 16px rgba(170,110,30,.18)}
+
+/* ---------- volley / poker placeholder screens ---------- */
+.game-soon .soon-art{animation:soonFloat 3.6s ease-in-out infinite;text-shadow:0 6px 22px rgba(170,110,30,.3)}
+@keyframes soonFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+/* ---------- group-chat game sessions (cards, lobby, strip) ---------- */
+.gs-card .gs-card-row{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap}
+.gs-status{font-size:.68rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+  border-radius:99px;padding:3px 9px;border:1px solid var(--line2);color:var(--soft);font-family:"IBM Plex Mono",monospace}
+.gs-status-lobby{border-color:var(--lime-line);color:var(--lime);background:var(--lime-bg)}
+.gs-status-playing{border-color:var(--lime);color:#fff;background:var(--lime)}
+.gs-status-finished{border-color:#ecd28a;color:var(--gold);background:var(--gold-bg)}
+.gs-noprize{font-size:.74rem;color:var(--soft)}
+.gs-join{margin-top:10px}
+.gs-standings{display:flex;flex-direction:column;gap:5px;margin-top:8px}
+.gs-standing{display:flex;align-items:center;gap:8px;background:#ffffff;
+  border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:.86rem}
+.gs-standing.me{border-color:#ecd28a;background:var(--gold-bg)}
+.gs-standing .gs-rank{font-weight:900;min-width:34px;font-family:Sora,sans-serif}
+.gs-standing .gs-who{flex:1;font-weight:600}
+.gs-standing .gs-score{font-weight:900;color:var(--gold);font-family:"IBM Plex Mono",monospace}
+.gs-overlay .gs-head{display:flex;align-items:center;gap:8px;font-size:1.02rem}
+.gs-players{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+.gs-player{display:flex;align-items:center;gap:8px;background:#ffffff;
+  border:1px solid var(--line);border-radius:10px;padding:7px 10px}
+.gs-player .gs-who{flex:1;font-weight:600;font-size:.9rem}
+.gs-host-tag{font-size:.74rem;color:var(--gold);font-weight:800}
+.fn-group-bar{display:flex;align-items:center;gap:8px;margin:10px 18px 0;flex-wrap:wrap}
+.fn-group-strip{display:flex;gap:6px;flex-wrap:wrap;flex:1}
+.gs-strip-item{font-size:.78rem;font-weight:700;background:#ffffff;
+  border:1px solid var(--line);border-radius:99px;padding:4px 9px;white-space:nowrap}
+.gs-strip-item.me{border-color:#ecd28a;color:var(--gold)}
+
+/* ===== 2030 pass (games) ===== */
+.pk-ball img{width:30px;height:30px;display:block;filter:drop-shadow(0 4px 8px rgba(0,0,0,.45))}
+.pk-keeper .pk-keeper-ic{width:46px;height:46px;color:#fff;filter:drop-shadow(0 6px 14px rgba(0,0,0,.5))}
+.gs-rank.medal{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;
+  border-radius:50%;font-size:.8rem;color:#1a1206;box-shadow:0 4px 10px rgba(0,0,0,.4)}
+.gs-rank.m1{background:linear-gradient(145deg,#ffe9a8,#f7c948 55%,#c9930a)}
+.gs-rank.m2{background:linear-gradient(145deg,#ffffff,#c9ced6 55%,#8f96a3);color:#22262e}
+.gs-rank.m3{background:linear-gradient(145deg,#ffc79a,#e08b4e 55%,#9c5a24);color:#241203}

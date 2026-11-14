@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>LOOPI — watch, upload, generate</title>
+<meta name="description" content="LOOPI: an upload-first short-video platform. Upload up to 20s, generate AI video with credits, chat, rooms and live.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="games.css">
+<link rel="stylesheet" href="volfield.css">
+</head>
+<body>
+<div id="phone">
+
+  <!-- ======================= SPLASH / ENTRY =======================
+       Kay's entry page: a clean WHITE page, nothing competing, with
+       the Loopi wordmark in glossy glass orange centred — shown
+       while the app loads, then it fades into auth or the feed. -->
+  <div id="splash" aria-hidden="true">
+    <div class="splash-lockup">
+      <svg class="splash-art" viewBox="0 0 340 196" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="glassOrange" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#FFC46B"/>
+            <stop offset=".45" stop-color="#FF9A2E"/>
+            <stop offset=".56" stop-color="#FF7A00"/>
+            <stop offset="1" stop-color="#EF6200"/>
+          </linearGradient>
+          <linearGradient id="glassSheen" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#ffffff" stop-opacity=".9"/>
+            <stop offset=".52" stop-color="#ffffff" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <g transform="translate(136,2)">
+          <path d="M54.1 21.8 A23 23 0 1 0 59 36" stroke="url(#glassOrange)" stroke-width="6.5" stroke-linecap="round"/>
+          <path d="M59 25.5 L51.8 39.5 L66.2 39.5 Z" fill="url(#glassOrange)"/>
+          <path d="M29.5 25.5 L48 36 L29.5 46.5 Z" fill="url(#glassOrange)"/>
+        </g>
+        <text x="172" y="152" text-anchor="middle" font-family="Sora, Manrope, sans-serif" font-size="57" font-weight="800" letter-spacing="5" fill="url(#glassOrange)">LOOPI</text>
+        <text x="172" y="152" text-anchor="middle" font-family="Sora, Manrope, sans-serif" font-size="57" font-weight="800" letter-spacing="5" fill="url(#glassSheen)">LOOPI</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ======================= AUTH ======================= -->
+  <section id="screen-auth" class="screen">
+    <div class="auth-aurora" aria-hidden="true"><i class="ab ab-1"></i><i class="ab ab-2"></i><i class="ab ab-3"></i></div>
+    <div class="auth-wrap">
+      <div class="logo">
+        <svg class="logo-mark" viewBox="0 0 72 72" fill="none" aria-hidden="true">
+          <path d="M54.1 21.8 A23 23 0 1 0 59 36" stroke="#fff" stroke-width="6.5" stroke-linecap="round"/>
+          <path d="M59 25.5 L51.8 39.5 L66.2 39.5 Z" fill="#fff"/>
+          <path d="M29.5 25.5 L48 36 L29.5 46.5 Z" fill="#fff"/>
+        </svg>
+        <span class="logo-word">LOOPI</span>
+      </div>
+      <p class="tagline" data-i18n="tagline">Watch. Upload. Generate.</p>
+
+      <div class="auth-card">
+        <div class="auth-tabs">
+          <button id="auth-tab-login" class="auth-tab active" data-i18n="login">Log in</button>
+          <button id="auth-tab-register" class="auth-tab" data-i18n="signup">Sign up</button>
+        </div>
+
+        <div id="register-fields" class="hidden">
+          <label class="fld"><span data-i18n="displayName">Display name</span>
+            <input id="auth-name" type="text" maxlength="60" autocomplete="name"></label>
+          <label class="fld"><span data-i18n="handle">Handle</span>
+            <input id="auth-handle" type="text" maxlength="24" autocomplete="username" placeholder="yourname"></label>
+        </div>
+
+        <label class="fld"><span data-i18n="email">Email</span>
+          <input id="auth-email" type="email" autocomplete="email" placeholder="you@example.com"></label>
+        <label class="fld"><span data-i18n="password">Password</span>
+          <input id="auth-password" type="password" autocomplete="current-password"></label>
+
+        <button id="auth-submit" class="primary big" data-i18n="login">Log in</button>
+        <button id="bio-unlock-btn" class="ghost big hidden" data-i18n="bioUnlock">Unlock with fingerprint</button>
+        <p id="auth-msg" class="form-msg" role="alert"></p>
+
+        <div class="auth-or"><span data-i18n="or">or</span></div>
+        <button id="demo-browse-btn" class="ghost big" data-i18n="browseDemo">Browse the demo first</button>
+        <p class="auth-note" data-i18n="authNote">Demo mode uses sample content on this device. An account uses the real LOOPI server.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= ONBOARDING ======================= -->
+  <section id="screen-onboarding" class="screen hidden">
+    <div class="onboard-wrap">
+      <div class="onboard-brand" aria-hidden="true">
+        <svg class="logo-mark onboard-mark" viewBox="0 0 72 72" fill="none" aria-hidden="true">
+          <path d="M54.1 21.8 A23 23 0 1 0 59 36" stroke="#fff" stroke-width="6.5" stroke-linecap="round"/>
+          <path d="M59 25.5 L51.8 39.5 L66.2 39.5 Z" fill="#fff"/>
+          <path d="M29.5 25.5 L48 36 L29.5 46.5 Z" fill="#fff"/>
+        </svg>
+        <span class="onboard-word">LOOPI</span>
+      </div>
+      <h1 data-i18n="pickInterests">What are you into?</h1>
+      <p class="sub" data-i18n="pickInterestsSub">Pick a few — your For You feed tunes itself to these.</p>
+      <div id="interest-chips" class="chips"></div>
+      <button id="onboard-done" class="primary big" data-i18n="continue">Continue</button>
+      <button id="onboard-skip" class="ghost" data-i18n="skip">Skip for now</button>
+      <p id="onboard-msg" class="form-msg"></p>
+    </div>
+  </section>
+
+  <!-- ======================= MAIN ======================= -->
+  <section id="screen-main" class="screen hidden">
+
+    <!-- HOME -->
+    <div id="panel-home" class="panel">
+      <header class="feed-top">
+        <div class="ft-left">
+          <button id="menu-btn" class="glass-btn" aria-label="Menu">⋯<span id="menu-btn-dot" class="menu-dot hidden"></span></button>
+          <button id="live-pill" class="livepill" data-i18n="liveBadge">● LIVE</button>
+        </div>
+        <div class="feed-tabs">
+          <button id="ftab-following" class="ftab" data-i18n="following">Following</button>
+          <button id="ftab-foryou" class="ftab on" data-i18n="forYou">For You</button>
+        </div>
+        <button id="search-btn" class="glass-btn search-btn" aria-label="Search" data-i18n-aria="ariaSearch">⌕</button>
+      </header>
+
+      <!-- the one menu: every feature lives behind the ⋯ -->
+      <div id="nav-menu" class="nav-menu hidden">
+        <button class="menu-item" data-tab="create"><span class="mi-ic create-ic">＋</span><span data-i18n="create">Create</span></button>
+        <button class="menu-item" data-tab="discover"><span class="mi-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20.5 20.5-4.8-4.8"/></svg></span><span data-i18n="discover">Discover</span></button>
+        <button class="menu-item" data-tab="feed"><span class="mi-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.6"/><rect x="13" y="4" width="7" height="7" rx="1.6"/><rect x="4" y="13" width="7" height="7" rx="1.6"/><rect x="13" y="13" width="7" height="7" rx="1.6"/></svg></span><span data-i18n="tabFeed">Feed</span></button>
+        <button class="menu-item" data-tab="live"><span class="mi-ic live-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><path d="M8.2 15.8a5.4 5.4 0 0 1 0-7.6M15.8 8.2a5.4 5.4 0 0 1 0 7.6M5.6 18.4a9.4 9.4 0 0 1 0-12.8M18.4 5.6a9.4 9.4 0 0 1 0 12.8"/></svg></span><span data-i18n="live">Live</span></button>
+        <button class="menu-item" data-tab="games"><span class="mi-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.8 7.5h10.4a5.3 5.3 0 0 1 5.2 5.6c0 2.9-2.3 5.2-5.1 5.2-1.7 0-3.2-.8-4.1-2.1H10.8c-.9 1.3-2.4 2.1-4.1 2.1-2.8 0-5.1-2.3-5.1-5.2a5.3 5.3 0 0 1 5.2-5.6z"/><path d="M7.2 10.8v4M5.2 12.8h4"/><circle cx="16.4" cy="11.2" r=".4" fill="currentColor"/><circle cx="18.6" cy="14" r=".4" fill="currentColor"/></svg></span><span data-i18n="tabArena">Arena</span></button>
+        <button class="menu-item" data-tab="inbox"><span class="mi-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.8a8 8 0 0 1-8.4 7.7c-1.2 0-2.4-.2-3.4-.7L3.5 20.5l1.7-5.2a8 8 0 1 1 15.3-3.5z"/></svg></span><span data-i18n="tabChat">Chat</span><span id="menu-chat-badge" class="mi-badge hidden">3</span></button>
+        <button class="menu-item" data-tab="notifications"><span class="mi-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.8 9.2a5.8 5.8 0 1 0-11.6 0c0 5-2.3 6.6-2.3 6.6h16.2s-2.3-1.6-2.3-6.6"/><path d="M10.2 19.5a2 2 0 0 0 3.6 0"/></svg></span><span data-i18n="notifications">Notifications</span><span id="menu-notif-badge" class="mi-badge hidden">0</span></button>
+        <button class="menu-item" data-tab="profile"><span class="mi-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.2" r="3.7"/><path d="M5 20.2a7.2 7.2 0 0 1 14 0"/></svg></span><span data-i18n="profile">Profile</span></button>
+        <button class="menu-item" data-tab="settings"><span class="mi-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6.5h9M19 6.5h1.5M4 12h3.5M13.5 12H20M4 17.5h11.5M19.5 17.5H20"/><circle cx="16" cy="6.5" r="2.2"/><circle cx="10.5" cy="12" r="2.2"/><circle cx="17" cy="17.5" r="2.2"/></svg></span><span data-i18n="settingsTitle">Settings</span></button>
+        <div class="menu-credits"><span data-i18n="credits">Credits</span><span id="credits-pill" class="credits-pill" title="Credits" data-i18n-title="credits">✦ 0</span></div>
+      </div>
+
+      <!-- real-time "new posts" pill (SSE): appears when posts land
+           while you browse; tapping loads them without ever yanking
+           the feed mid-video -->
+      <button id="new-posts-pill" class="new-posts-pill hidden" type="button"></button>
+
+      <div id="feed" class="feed"></div>
+
+      <!-- floating chat bubbles + overlay -->
+      <button id="chat-bubble" class="chat-bubble hidden" aria-label="New message" data-i18n-aria="ariaNewMessage">
+        <span id="chat-bubble-avatar" class="bubble-avatar">M</span>
+        <span class="bubble-dot">2</span>
+      </button>
+      <button id="chat-bubble-2" class="chat-bubble bubble-2 hidden" aria-label="Group chat">
+        <span class="bubble-avatar">WC</span>
+        <span class="bubble-dot">3</span>
+      </button>
+      <div id="chat-overlay" class="chat-overlay hidden">
+        <div class="overlay-head">
+          <span id="overlay-avatar" class="mini-avatar">M</span>
+          <span id="overlay-name">Mira</span>
+          <span id="overlay-demo-tag" class="demo-tag" data-i18n="demoTag">demo</span>
+          <button id="overlay-close" class="icon-btn" aria-label="Close" data-i18n-aria="ariaClose">✕</button>
+        </div>
+        <div id="overlay-messages" class="overlay-messages"></div>
+        <div class="overlay-input-row">
+          <input id="overlay-input" type="text" maxlength="500">
+          <button id="overlay-send" class="send-btn" data-i18n="send">Send</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISCOVER -->
+    <div id="panel-discover" class="panel hidden">
+      <header class="page-head"><button class="back-home glass-btn" aria-label="Back">‹</button><h2 data-i18n="discover">Discover</h2></header>
+      <div class="search-row">
+        <input id="search-input" type="search">
+      </div>
+      <p class="search-note" data-i18n="searchNote">Explore squares are creators you don't follow. Tap one to jump into their video.</p>
+      <div id="comp-card" class="comp-card hidden">
+        <h3 class="comp-head"><svg class="ic ic-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 4h9v4.8a4.5 4.5 0 0 1-9 0z"/><path d="M7.5 5.5H4.2a3.1 3.1 0 0 0 3.3 3.8M16.5 5.5h3.3a3.1 3.1 0 0 1-3.3 3.8"/><path d="M12 13.3V17M8.5 20.5h7M10 17h4l.6 3.5H9.4z"/></svg> <span data-i18n="compTitle">Weekly competition</span></h3>
+        <div id="comp-body"></div>
+      </div>
+      <div id="explore-grid" class="explore-grid"></div>
+    </div>
+
+    <!-- LIVE -->
+    <div id="panel-live" class="panel hidden">
+      <header class="page-head"><button class="back-home glass-btn" aria-label="Back">‹</button><h2 data-i18n="live">Live</h2></header>
+      <button id="go-live-btn" class="primary" data-i18n="goLive">Go Live</button>
+      <p id="live-msg" class="form-msg"></p>
+      <h3 class="section-title" data-i18n="liveNow">Live now</h3>
+      <div id="live-grid" class="live-grid"></div>
+    </div>
+
+    <!-- INBOX -->
+    <div id="panel-inbox" class="panel hidden">
+      <header class="page-head"><button class="back-home glass-btn" aria-label="Back">‹</button><h2 data-i18n="inbox">Inbox</h2></header>
+      <div id="room-list" class="room-list"></div>
+      <details class="new-room">
+        <summary data-i18n="newRoom">+ New room</summary>
+        <label class="fld"><span data-i18n="roomName">Room name</span>
+          <input id="room-name" type="text" maxlength="80"></label>
+        <label class="fld"><span data-i18n="roomType">Type</span>
+          <select id="room-type">
+            <option value="group" data-i18n="roomGroup">Group chat</option>
+            <option value="open" data-i18n="roomOpen">Open room</option>
+            <option value="private" data-i18n="roomPrivate">Private (password)</option>
+          </select></label>
+        <label class="fld" id="room-password-row"><span data-i18n="roomPassword">Password</span>
+          <input id="room-password" type="password" maxlength="100"></label>
+        <button id="room-create-btn" class="primary" data-i18n="createRoom">Create room</button>
+        <p id="room-msg" class="form-msg"></p>
+      </details>
+    </div>
+
+    <!-- NOTIFICATIONS -->
+    <div id="panel-notifications" class="panel hidden">
+      <header class="page-head"><button class="back-home glass-btn" aria-label="Back">‹</button><h2 data-i18n="notifTitle">Notifications</h2>
+        <button id="notif-read-all" class="ghost notif-read-all" data-i18n="notifMarkAllRead">Mark all read</button></header>
+      <div id="notif-list" class="notif-list"></div>
+    </div>
+
+    <!-- CREATOR (someone else's profile, from the feed) -->
+    <div id="panel-creator" class="panel hidden">
+      <header class="page-head"><button class="back-home glass-btn" aria-label="Back">‹</button><h2 id="creator-title">Creator</h2></header>
+      <div class="ig-profile">
+        <div class="ig-top">
+          <span id="creator-avatar" class="big-avatar ig-avatar">?</span>
+          <div class="ig-stats" aria-label="Profile statistics">
+            <button id="creator-videos-stat" class="ig-stat" type="button"><b id="creator-video-count">0</b><span data-i18n="videosWord">Videos</span></button>
+            <button id="creator-followers-stat" class="ig-stat" type="button"><b id="creator-followers-count">0</b><span data-i18n="followersWord">followers</span></button>
+            <button id="creator-following-stat" class="ig-stat" type="button"><b id="creator-following-count">0</b><span data-i18n="followingWord">following</span></button>
+          </div>
+        </div>
+        <div class="ig-identity">
+          <div id="creator-name" class="profile-name">—</div>
+          <div class="ig-handle-row"><span id="creator-handle" class="profile-handle">@—</span><span id="creator-private-chip" class="private-chip hidden"><svg class="ic ic-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10.8" width="14" height="9.2" rx="2"/><path d="M8 10.8V8a4 4 0 0 1 8 0v2.8"/><circle cx="12" cy="15.4" r="1.3" fill="currentColor" stroke="none"/></svg> <span data-i18n="privacyPrivate">Private</span></span></div>
+          <p id="creator-bio" class="profile-bio"></p>
+          <p id="creator-level-line" class="ig-level-line"></p>
+        </div>
+        <div class="ig-actions">
+          <button id="creator-follow-btn" class="primary creator-follow hidden">Follow</button>
+          <button id="creator-message-btn" class="ghost ig-action" data-i18n="messageVerb">Message</button>
+          <button id="creator-share-btn" class="ghost ig-action" data-i18n="share">Share</button>
+        </div>
+        <div id="creator-locked" class="locked-box hidden">
+          <div class="locked-ic"><svg class="ic ic-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10.8" width="14" height="9.2" rx="2"/><path d="M8 10.8V8a4 4 0 0 1 8 0v2.8"/><circle cx="12" cy="15.4" r="1.3" fill="currentColor" stroke="none"/></svg></div>
+          <b data-i18n="privateAccount">This account is private</b>
+          <p class="sub" data-i18n="followToSee">Follow this account to see their videos.</p>
+        </div>
+      </div>
+      <h3 id="creator-videos-title" class="section-title ig-grid-title" data-i18n="creatorVideos">Videos</h3>
+      <div id="creator-grid" class="profile-grid"></div>
+    </div>
+
+    <!-- PROFILE -->
+    <div id="panel-profile" class="panel hidden">
+      <header class="page-head"><button class="back-home glass-btn" aria-label="Back">‹</button><h2 data-i18n="profile">Profile</h2></header>
+      <div class="ig-profile">
+        <div class="ig-top">
+          <span id="profile-avatar" class="big-avatar ig-avatar">?</span>
+          <div class="ig-stats" aria-label="Profile statistics">
+            <button id="profile-videos-stat" class="ig-stat" type="button"><b id="profile-video-count">0</b><span data-i18n="videosWord">Videos</span></button>
+            <button id="profile-followers-stat" class="ig-stat" type="button"><b id="profile-followers-count">0</b><span data-i18n="followersWord">followers</span></button>
+            <button id="profile-following-stat" class="ig-stat" type="button"><b id="profile-following-count">0</b><span data-i18n="followingWord">following</span></button>
+          </div>
+        </div>
+        <div class="ig-identity">
+          <div id="profile-name" class="profile-name">—</div>
+          <div id="profile-handle" class="profile-handle">@—</div>
+          <p id="profile-bio" class="profile-bio"></p>
+          <p id="profile-level-line" class="ig-level-line"></p>
+          <div id="profile-badges" class="badge-row ig-badges"></div>
+        </div>
+        <div class="ig-actions">
+          <button id="edit-profile-btn" class="ghost ig-action primary-action" data-i18n="editProfile">Edit profile</button>
+          <button id="profile-share-btn" class="ghost ig-action" data-i18n="share">Share</button>
+        </div>
+      </div>
+
+      <div class="profile-tabs" role="tablist" aria-label="Profile sections">
+        <button id="profile-tab-videos" class="profile-tab active" type="button">▦ <span data-i18n="videosWord">Videos</span></button>
+        <button id="profile-tab-shop" class="profile-tab" type="button">✦ <span data-i18n="shopCredits">Shop / Credits</span></button>
+      </div>
+
+      <div id="profile-videos-pane" class="profile-pane">
+        <div id="profile-grid" class="profile-grid"></div>
+        <p id="profile-no-videos" class="sub profile-empty hidden" data-i18n="noVideosYet">No videos yet.</p>
+      </div>
+
+      <div id="profile-shop-pane" class="profile-pane hidden">
+        <div class="credits-card shop-card">
+          <div class="shop-balance-label" data-i18n="currentBalance">Current balance</div>
+          <div id="credits-balance" class="credits-balance shop-balance">✦ 0</div>
+          <p class="sub shop-note" data-i18n="creditsForLine">Credits power AI video generation and tips to streamers.</p>
+          <div class="earnings-row">
+            <span data-i18n="earnings">Earnings</span>
+            <b id="earnings-balance">✦ 0</b>
+          </div>
+          <p class="sub earnings-note" data-i18n="earningsNote">Tips you received, tracked separately for payout.</p>
+          <div id="packs-list" class="packs-list"></div>
+          <p id="packs-msg" class="form-msg"></p>
+          <div id="ledger-list" class="ledger-list"></div>
+        </div>
+      </div>
+
+      <button id="settings-btn" class="ghost"><svg class="ic ic-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6.5h9M19 6.5h1.5M4 12h3.5M13.5 12H20M4 17.5h11.5M19.5 17.5H20"/><circle cx="16" cy="6.5" r="2.2"/><circle cx="10.5" cy="12" r="2.2"/><circle cx="17" cy="17.5" r="2.2"/></svg><span data-i18n="settings">Settings</span></button>
+      <button id="logout-btn" class="ghost danger" data-i18n="logout">Log out</button>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="panel-settings" class="panel hidden">
+      <header class="page-head chat-head">
+        <button id="settings-back" class="icon-btn" aria-label="Back" data-i18n-aria="ariaBack">‹</button>
+        <h2 data-i18n="settingsTitle">Settings</h2>
+      </header>
+      <div class="settings-group">
+        <h3 class="section-title" data-i18n="language">Language</h3>
+        <label class="radio-row">
+          <input type="radio" name="lang" id="lang-en" value="en">
+          <span>English</span>
+        </label>
+        <label class="radio-row">
+          <input type="radio" name="lang" id="lang-zh" value="zh">
+          <span>中文（简体）</span>
+        </label>
+        <label class="radio-row">
+          <input type="radio" name="lang" id="lang-hi" value="hi">
+          <span>हिन्दी</span>
+        </label>
+        <p class="sub" data-i18n="languageNote">Applies to the whole app right away.</p>
+      </div>
+      <div id="bio-settings-group" class="settings-group hidden">
+        <h3 class="section-title" data-i18n="bioTitle">Biometric unlock</h3>
+        <label class="switch-row">
+          <span data-i18n="bioUnlock">Unlock with fingerprint</span>
+          <input id="bio-toggle" type="checkbox">
+        </label>
+        <p class="sub" data-i18n="bioNote">Your session is sealed with Android Keystore on this phone. If biometric unlock fails, use your password.</p>
+        <p id="bio-msg" class="form-msg"></p>
+      </div>
+      <div class="settings-group">
+        <h3 class="section-title" data-i18n="privacyTitle">Account privacy</h3>
+        <label class="radio-row">
+          <input type="radio" name="privacy" id="privacy-public" value="public">
+          <span data-i18n="privacyPublic">Public</span>
+        </label>
+        <label class="radio-row">
+          <input type="radio" name="privacy" id="privacy-private" value="private">
+          <span data-i18n="privacyPrivate">Private</span>
+        </label>
+        <p class="sub" id="privacy-note"></p>
+      </div>
+      <div class="settings-group">
+        <h3 class="section-title" data-i18n="notifPrefsTitle">Notifications</h3>
+        <div id="notif-prefs"></div>
+        <p class="sub" data-i18n="notifPrefsNote">Choose what lands in your inbox. Turned-off types are never created.</p>
+      </div>
+      <div class="settings-group">
+        <h3 class="section-title" data-i18n="about">About</h3>
+        <p class="sub">LOOPI · <span data-i18n="aboutText">Upload-first short video. AI generation is one option inside — never the whole app.</span></p>
+        <p class="sub" id="settings-mode"></p>
+      </div>
+      <div class="settings-group danger-zone">
+        <h3 class="section-title" data-i18n="dangerZone">Danger zone</h3>
+        <p class="sub" data-i18n="deleteAccountNote">Permanently delete your account and everything in it. This cannot be undone.</p>
+        <button id="delete-account-btn" class="ghost danger" data-i18n="deleteAccount">Delete account</button>
+      </div>
+    </div>
+
+    <!-- CHAT (full view, from Inbox) -->
+    <div id="panel-chat" class="panel hidden">
+      <header class="page-head chat-head">
+        <button id="chat-back" class="icon-btn" aria-label="Back" data-i18n-aria="ariaBack">‹</button>
+        <h2 id="chat-title">Chat</h2>
+        <span id="chat-demo-tag" class="demo-tag hidden" data-i18n="demoTag">demo</span>
+      </header>
+      <div id="chat-messages" class="chat-messages"></div>
+      <div id="share-picker" class="share-picker hidden">
+        <p class="sub" data-i18n="shareWhich">Share which video?</p>
+        <div id="share-picker-list" class="share-picker-list"></div>
+      </div>
+      <div class="chat-input-row">
+        <button id="chat-share-btn" class="icon-btn" title="Share a video" data-i18n-title="titleShareVideo"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6.5" width="18" height="12.5" rx="2.5"/><path d="M3 10.5h18M7.5 6.5l2 4M13 6.5l2 4"/></svg></button>
+        <button id="chat-game-btn" class="icon-btn hidden" title="Start a group game" data-i18n-title="titleGroupGame"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.8 7.5h10.4a5.3 5.3 0 0 1 5.2 5.6c0 2.9-2.3 5.2-5.1 5.2-1.7 0-3.2-.8-4.1-2.1H10.8c-.9 1.3-2.4 2.1-4.1 2.1-2.8 0-5.1-2.3-5.1-5.2a5.3 5.3 0 0 1 5.2-5.6z"/><path d="M7.2 10.8v4M5.2 12.8h4"/><circle cx="16.4" cy="11.2" r=".4" fill="currentColor"/><circle cx="18.6" cy="14" r=".4" fill="currentColor"/></svg></button>
+        <button id="chat-mic-btn" class="icon-btn" title="Voice message" data-i18n-title="titleVoiceMessage"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5.8 11.8a6.2 6.2 0 0 0 12.4 0M12 18v3.2"/></svg></button>
+        <input id="chat-input" type="text" maxlength="2000">
+        <button id="chat-send" class="send-btn" data-i18n="send">Send</button>
+      </div>
+      <div id="voice-rec-row" class="voice-rec-row hidden">
+        <span class="voice-rec-dot"></span>
+        <span id="voice-rec-time" class="voice-rec-time">0:00</span>
+        <span class="voice-rec-label" data-i18n="voiceRecording">Recording…</span>
+        <button id="voice-rec-cancel" class="ghost" data-i18n="cancel">Cancel</button>
+        <button id="voice-rec-send" class="send-btn" data-i18n="send">Send</button>
+      </div>
+      <p id="chat-msg" class="form-msg"></p>
+    </div>
+
+    <!-- LIVE ROOM -->
+    <div id="panel-live-room" class="panel hidden">
+      <header class="page-head chat-head">
+        <button id="live-back" class="icon-btn" aria-label="Back" data-i18n-aria="ariaBack">‹</button>
+        <h2 id="lr-title">Live</h2>
+        <span class="live-badge" data-i18n="liveBadge">● LIVE</span>
+      </header>
+      <div class="lr-stage">
+        <video id="lr-video" class="lr-video hidden" autoplay playsinline></video>
+        <div id="lr-stage-art" class="lr-stage-art"></div>
+        <div id="lr-audio" class="hidden"></div>
+        <div id="lr-gift-overlay" class="lr-gift-overlay hidden"><div id="lr-gift-emoji" class="lr-gift-icon"></div></div>
+        <div class="lr-stage-meta">
+          <span id="lr-streamer">@—</span>
+          <span id="lr-conn" class="conn-chip hidden">Ready to connect</span>
+          <span id="lr-viewers" class="lr-viewers"><svg class="ic ic-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.8 12 5.8 21.5 12 21.5 12 18 18.2 12 18.2 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg><span id="lr-viewers-n">0</span></span>
+        </div>
+        <p id="lr-note" class="lr-note"></p>
+      </div>
+      <div id="lr-chat" class="lr-chat"></div>
+      <div class="tip-row">
+        <span class="tip-note" data-i18n="tipNote">Tips go to the streamer</span>
+        <button class="tip-btn" data-tip="1">✦ 1</button>
+        <button class="tip-btn" data-tip="5">✦ 5</button>
+        <button class="tip-btn" data-tip="20">✦ 20</button>
+      </div>
+      <p id="tip-msg" class="form-msg"></p>
+      <div class="chat-input-row">
+        <input id="lr-chat-input" type="text" maxlength="500">
+        <button id="lr-gift-btn" class="send-btn gift-btn"><svg class="ic ic-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="8" width="17" height="4" rx="1"/><path d="M5 12v7a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-7"/><path d="M12 8v12.5"/><path d="M12 8c-4.2 0-5.5-1.6-5.5-3.2C6.5 3.1 7.8 2 9.3 2 11.4 2 12 4.6 12 8zm0 0c4.2 0 5.5-1.6 5.5-3.2C17.5 3.1 16.2 2 14.7 2 12.6 2 12 4.6 12 8z"/></svg><span data-i18n="giftBtn">Gift</span></button>
+        <button id="lr-chat-send" class="send-btn" data-i18n="send">Send</button>
+      </div>
+    </div>
+
+    <!-- GIFT SHELF (live rooms: gifts are priced by the server catalogue) -->
+    <div id="gift-sheet" class="comments-sheet gift-sheet hidden">
+      <div class="create-head">
+        <h2 data-i18n="giftShelfTitle">Send a gift</h2>
+        <button id="gift-close" class="icon-btn" aria-label="Close" data-i18n-aria="ariaClose">✕</button>
+      </div>
+      <div class="credits-popup-balance">
+        <span data-i18n="giftBalance">Your balance</span>
+        <b id="gift-balance">✦ 0</b>
+      </div>
+      <div id="gift-grid" class="gift-grid"></div>
+      <p id="gift-msg" class="form-msg"></p>
+    </div>
+
+    <!-- GAMES HUB -->
+    <div id="panel-games" class="panel hidden">
+      <header class="page-head"><button class="back-home glass-btn" aria-label="Back">‹</button>
+        <h2 data-i18n="games">Games</h2>
+        <span id="coins-pill" class="coins-pill" title="Game coins" data-i18n-title="gameCoins"><img class="coin-png-sm" src="games3d/coin.png" alt=""><span id="coins-n">0</span></span>
+      </header>
+      <p class="search-note" data-i18n="gamesNote">Small games, big bragging rights. Challenge a friend and the card lands right inside your chat.</p>
+      <div id="games-level-strip" class="games-level-strip"></div>
+      <div id="games-grid" class="games-grid"></div>
+      <div id="games-leaderboard" class="lb-list"></div>
+      <p class="sub games-coins-note" data-i18n="coinsNote">Game coins are earned by playing — never bought. They are a separate games currency and never convert into credits or cash.</p>
+    </div>
+
+    <!-- GAME: PENALTY KICKS -->
+    <div id="panel-game-penalty" class="panel hidden">
+      <header class="page-head chat-head">
+        <button class="icon-btn game-back" aria-label="Back" data-i18n-aria="ariaBack">‹</button>
+        <h2><img class="h2-game-ic" src="games3d/penalty.png" alt=""> <span data-i18n="gamePenalty">Penalty Kicks</span></h2>
+      </header>
+      <div class="game-stage">
+        <div id="pk-score" class="pk-score">You 0 — 0 Bot</div>
+        <div id="pk-dots" class="pk-dots"></div>
+        <div id="pk-prompt" class="pk-prompt"></div>
+        <div id="pk-goal" class="pk-goal"></div>
+        <div id="pk-power" class="pk-power hidden"><span data-i18n="pkPower">Power</span><div class="pk-power-track"><div id="pk-power-fill"></div></div></div>
+        <p id="pk-msg" class="pk-msg"></p>
+        <div id="pk-result" class="pk-result hidden">
+          <div id="pk-result-text"></div>
+          <button id="pk-again" class="primary" data-i18n="playAgain">Play again</button>
+          <button id="pk-challenge" class="ghost" data-i18n="challengeFriend">Challenge a friend</button>
+        </div>
+        <p class="sub game-rules" data-i18n="penaltyRules">Best of 5, then sudden death. Shooting: swipe across the goal — where your flick lands is where the ball goes, and full-power flicks near the frame can fly wide. Saving: swipe to dive the moment the bot shoots — late dives cover less ground.</p>
+      </div>
+    </div>
+
+    <!-- GAME: PING PONG -->
+    <div id="panel-game-pong" class="panel hidden">
+      <header class="page-head chat-head">
+        <button class="icon-btn game-back" aria-label="Back" data-i18n-aria="ariaBack">‹</button>
+        <h2><img class="h2-game-ic" src="games3d/pong.png" alt=""> <span data-i18n="gamePong">Ping Pong</span></h2>
+      </header>
+      <div class="pong-online" id="pong-online">
+        <div class="po-modes">
+          <button id="po-mode-bot" class="po-mode active" data-i18n="poBotMatch">Bot match</button>
+          <button id="po-mode-online" class="po-mode" data-i18n="poOnlineMatch">Play a friend · 1v1 online</button>
+        </div>
+        <div id="po-online-panel" class="po-panel hidden">
+          <div class="po-row">
+            <button id="po-create" class="ghost" data-i18n="poCreateRoom">Create room</button>
+            <button id="po-quick" class="ghost" data-i18n="poQuickMatch">⚡ Quick match</button>
+          </div>
+          <div class="po-row">
+            <input id="po-code" type="text" maxlength="4" placeholder="CODE" autocomplete="off" autocapitalize="characters">
+            <button id="po-join" class="ghost" data-i18n="poJoinRoom">Join room</button>
+          </div>
+          <div id="po-room-code" class="po-code-display hidden"><span data-i18n="poRoomWord">Room</span> <b id="po-room-code-val"></b><span data-i18n="poSendCode"> — send this code to your friend</span></div>
+          <p id="po-status" class="po-status"></p>
+          <button id="po-leave" class="ghost hidden" data-i18n="poLeaveMatch">Leave match</button>
+        </div>
+      </div>
+      <div class="pong-wrap">
+        <canvas id="pong-canvas" width="360" height="480"></canvas>
+      </div>
+      <p id="pong-msg" class="pk-msg"></p>
+      <div class="pong-controls">
+        <button id="pong-start" class="primary" data-i18n="startGame">Start</button>
+        <button id="pong-challenge" class="ghost" data-i18n="challengeFriend">Challenge a friend</button>
+      </div>
+      <p class="sub game-rules" data-i18n="pongRules">First to 7. Drag or move the mouse to slide your paddle (bottom). The bot gets quicker every time you score.</p>
+    </div>
+
+    <!-- GAME: VOLLEY DUEL (placeholder) -->
+    <div id="panel-game-volley" class="panel hidden">
+      <header class="page-head chat-head">
+        <button class="icon-btn game-back" aria-label="Back" data-i18n-aria="ariaBack">‹</button>
+        <h2><img class="h2-game-ic" src="games3d/volley.png" alt=""> <span data-i18n="gameVolley">Volley Duel</span></h2>
+      </header>
+      <div class="game-soon">
+        <div class="soon-art" id="volley-art"><img class="soon-png" src="games3d/volley.png" alt=""></div>
+        <span class="demo-tag" data-i18n="inBuild">In build</span>
+        <h3 data-i18n="volleyTitle">Volley Duel — 1v1, on the clock</h3>
+        <p class="sub" data-i18n="volleyRules">A 60-second timed duel. Serve, bump and spike over the net — most points when the clock hits zero wins. Beat the bot to warm up, then challenge a friend for the real crown.</p>
+        <p class="sub" data-i18n="volleySoon">This one is still being built — the court, net physics and timed rounds land in a later update. Challenges posted now are demo cards.</p>
+        <button id="volley-challenge" class="ghost" data-i18n="challengeFriend">Challenge a friend</button>
+      </div>
+    </div>
+
+    <!-- GAME: POKER (placeholder) -->
+    <div id="panel-game-poker" class="panel hidden">
+      <header class="page-head chat-head">
+        <button class="icon-btn game-back" aria-label="Back" data-i18n-aria="ariaBack">‹</button>
+        <h2><img class="h2-game-ic" src="games3d/poker.png" alt=""> <span data-i18n="gamePoker">Poker</span></h2>
+      </header>
+      <div class="game-soon">
+        <div class="soon-art" id="poker-art"><img class="soon-png" src="games3d/poker.png" alt=""></div>
+        <span class="demo-tag" data-i18n="inBuild">In build</span>
+        <h3 data-i18n="pokerTitle">Poker — friendly tables</h3>
+        <p class="sub" data-i18n="pokerRules">Texas hold'em at friendly tables — you, your friends and a few bots. Two cards down, five on the board, best hand takes the pot of game coins.</p>
+        <div class="poker-rule" data-i18n="pokerFreeRule">Free coins only. Poker here runs on game coins that are earned by playing — they are never sold, never bought, and can never be converted into credits or cashed out. It is a game, not gambling.</div>
+        <p class="sub" data-i18n="pokerSoon">Tables are still being built. Challenges posted now are demo cards.</p>
+        <button id="poker-challenge" class="ghost" data-i18n="challengeFriend">Challenge a friend</button>
+      </div>
+    </div>
+
+    <!-- GAME: FOODNINJA -->
+    <div id="panel-game-foodninja" class="panel hidden">
+      <header class="page-head chat-head">
+        <button class="icon-btn game-back" aria-label="Back" data-i18n-aria="ariaBack">‹</button>
+        <h2><img class="h2-game-ic" src="games3d/foodninja.png" alt=""> <span data-i18n="gameFood">FoodNinja</span></h2>
+      </header>
+      <div class="pong-online fn-bar">
+        <div class="po-modes">
+          <button id="fn-mode-ai" class="po-mode active" data-i18n="fnVsAi">vs AI</button>
+          <button id="fn-mode-online" class="po-mode" data-i18n="fnOnline">1v1 online</button>
+        </div>
+        <div id="fn-diff-row" class="fn-diff-row">
+          <button class="fn-diff-btn active" data-diff="easy" data-i18n="diffEasy">Easy</button>
+          <button class="fn-diff-btn" data-diff="normal" data-i18n="diffNormal">Normal</button>
+          <button class="fn-diff-btn" data-diff="hard" data-i18n="diffHard">Hard</button>
+        </div>
+        <div id="fn-online-panel" class="po-panel hidden">
+          <div class="po-row">
+            <button id="fn-create" class="ghost" data-i18n="poCreateRoom">Create room</button>
+            <button id="fn-quick" class="ghost" data-i18n="poQuickMatch">⚡ Quick match</button>
+          </div>
+          <div class="po-row">
+            <input id="fn-code" type="text" maxlength="4" placeholder="CODE" autocomplete="off" autocapitalize="characters">
+            <button id="fn-join" class="ghost" data-i18n="poJoinRoom">Join room</button>
+          </div>
+          <div id="fn-room-code" class="po-code-display hidden"><span data-i18n="poRoomWord">Room</span> <b id="fn-room-code-val"></b><span data-i18n="poSendCode"> — send this code to your friend</span></div>
+          <p id="fn-status" class="po-status"></p>
+          <button id="fn-leave" class="ghost hidden" data-i18n="poLeaveMatch">Leave match</button>
+        </div>
+      </div>
+      <div id="fn-group-bar" class="fn-group-bar hidden">
+        <div id="fn-group-strip" class="fn-group-strip"></div>
+        <button id="fn-group-back" class="ghost hidden"><svg class="ic ic-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.8a8 8 0 0 1-8.4 7.7c-1.2 0-2.4-.2-3.4-.7L3.5 20.5l1.7-5.2a8 8 0 1 1 15.3-3.5z"/></svg> <span data-i18n="gsBackToChat">Back to chat</span></button>
+      </div>
+      <div class="fn-hud">
+        <span class="fn-chip"><svg class="ic ic-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.2" r="3.7"/><path d="M5 20.2a7.2 7.2 0 0 1 14 0"/></svg> <b id="fn-score">0</b></span>
+        <span class="fn-chip"><span id="fn-opp-label">BOT</span> <b id="fn-opp">0</b></span>
+        <span class="fn-chip"><svg class="ic ic-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12.8" r="7.3"/><path d="M12 9v3.8l2.6 1.6M9.5 2.8h5"/></svg> <b id="fn-time">60</b></span>
+        <span class="fn-chip" id="fn-lives"><svg class="ic ic-inline heart-ic" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><path d="M12 20.3C6.9 16.4 3.4 13.2 3.4 9.7 3.4 7.1 5.3 5.1 7.8 5.1c1.7 0 3.2.9 4.2 2.4.9-1.5 2.5-2.4 4.2-2.4 2.5 0 4.4 2 4.4 4.6 0 3.5-3.5 6.7-8.6 10.6z"/></svg><svg class="ic ic-inline heart-ic" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><path d="M12 20.3C6.9 16.4 3.4 13.2 3.4 9.7 3.4 7.1 5.3 5.1 7.8 5.1c1.7 0 3.2.9 4.2 2.4.9-1.5 2.5-2.4 4.2-2.4 2.5 0 4.4 2 4.4 4.6 0 3.5-3.5 6.7-8.6 10.6z"/></svg><svg class="ic ic-inline heart-ic" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><path d="M12 20.3C6.9 16.4 3.4 13.2 3.4 9.7 3.4 7.1 5.3 5.1 7.8 5.1c1.7 0 3.2.9 4.2 2.4.9-1.5 2.5-2.4 4.2-2.4 2.5 0 4.4 2 4.4 4.6 0 3.5-3.5 6.7-8.6 10.6z"/></svg></span>
+      </div>
+      <div class="fn-meter"><div id="fn-meter-fill"></div><span id="fn-fever-tag" class="hidden" data-i18n="feverTag">🔥 FEVER ×2</span></div>
+      <div class="food-wrap">
+        <canvas id="fn-canvas" width="360" height="480"></canvas>
+      </div>
+      <p id="fn-msg" class="pk-msg"></p>
+      <div id="fn-result" class="pk-result hidden">
+        <div id="fn-result-text"></div>
+        <button id="fn-again" class="primary" data-i18n="playAgain">Play again</button>
+        <button id="fn-challenge" class="ghost" data-i18n="challengeFriend">Challenge a friend</button>
+      </div>
+      <div class="pong-controls" id="fn-controls">
+        <button id="fn-start" class="primary" data-i18n="startGame">Start</button>
+        <button id="fn-challenge2" class="ghost" data-i18n="challengeFriend">Challenge a friend</button>
+      </div>
+      <p class="sub game-rules" data-i18n="foodRules">Swipe through flying food to slice it. 3+ in one swipe = Combo Platter bonus. Fill the meter for FEVER double points. Never slice the rotten egg!</p>
+    </div>
+
+    <!-- GAME: VOLFIELD -->
+    <div id="panel-game-volfield" class="panel hidden">
+      <header class="page-head chat-head">
+        <button class="icon-btn game-back" aria-label="Back" data-i18n-aria="ariaBack">‹</button>
+        <h2><img class="h2-game-ic" src="games3d/volfield.png" alt=""> <span data-i18n="gameVolfield">Volfield</span></h2>
+      </header>
+      <div class="pong-online vf-bar">
+        <div class="po-modes">
+          <button id="vf-mode-boss" class="po-mode active">Boss mode</button>
+          <button id="vf-mode-duel" class="po-mode">1v1 duel · 90s</button>
+        </div>
+        <div id="vf-stage-row" class="vf-stage-row">
+          <button id="vf-stage-prev" class="vf-nav-btn" aria-label="Previous stage">‹</button>
+          <span id="vf-stage-name" class="vf-stage-name"></span>
+          <button id="vf-stage-next" class="vf-nav-btn" aria-label="Next stage">›</button>
+        </div>
+        <p id="vf-best" class="vf-best"></p>
+      </div>
+      <div class="vf-hud">
+        <span class="vf-chip"><b id="vf-pct">0%</b> <span id="vf-claimed-label">Claimed</span></span>
+        <span class="vf-chip"><b id="vf-score">0</b> <span id="vf-score-label">Score</span></span>
+        <span class="vf-chip vf-lives-chip" id="vf-lives"></span>
+        <span class="vf-chip hidden" id="vf-time-chip"><b id="vf-time">90</b>s</span>
+      </div>
+      <p id="vf-stage-label" class="po-status"></p>
+      <div class="vf-shield"><span id="vf-shield-label">Shield</span><div class="vf-shield-track"><div id="vf-shield-fill"></div></div></div>
+      <div id="vf-duel-bar" class="vf-duel-bar hidden">
+        <div class="vf-duel-row"><span class="who" id="vf-you-label">You</span><div class="vf-duel-track"><div id="vf-you-fill"></div></div><span class="val" id="vf-you-pct">0%</span></div>
+        <div class="vf-duel-row"><span class="who" id="vf-bot-label">Bot rival</span><div class="vf-duel-track"><div id="vf-bot-fill"></div></div><span class="val" id="vf-bot-pct">0%</span></div>
+      </div>
+      <div class="vf-wrap">
+        <canvas id="vf-canvas" width="360" height="480"></canvas>
+      </div>
+      <p id="vf-msg" class="pk-msg"></p>
+      <div id="vf-result" class="pk-result hidden">
+        <div id="vf-result-text"></div>
+        <button id="vf-again" class="primary" data-i18n="playAgain">Play again</button>
+        <button id="vf-next" class="primary hidden">Next stage</button>
+        <button id="vf-challenge" class="ghost" data-i18n="challengeFriend">Challenge a friend</button>
+      </div>
+      <div class="vf-controls">
+        <button id="vf-start" class="primary">Start</button>
+      </div>
+      <div class="vf-pad" aria-hidden="false">
+        <button id="vf-pad-up" class="vf-pad-btn vf-pad-up" aria-label="Up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 15l7-7 7 7"/></svg></button>
+        <button id="vf-pad-left" class="vf-pad-btn vf-pad-left" aria-label="Left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <button id="vf-pad-down" class="vf-pad-btn vf-pad-down" aria-label="Down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l7 7 7-7"/></svg></button>
+        <button id="vf-pad-right" class="vf-pad-btn vf-pad-right" aria-label="Right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+      </div>
+      <p id="vf-rules" class="sub game-rules"></p>
+    </div>
+
+    <!-- Kay's 3-button quick bar: Feed · Profile · Search. The ⋯
+         menu above remains the full destination list. -->
+    <nav id="bottom-bar" class="bottom-bar" aria-label="Primary">
+      <button class="bottom-item active" data-bottom-nav="home" type="button"><span class="bottom-icon">⌂</span><span data-i18n="tabFeed">Feed</span></button>
+      <button class="bottom-item" data-bottom-nav="profile" type="button"><span class="bottom-icon">◯</span><span data-i18n="profile">Profile</span></button>
+      <button class="bottom-item" data-bottom-nav="discover" type="button"><span class="bottom-icon">⌕</span><span data-i18n="searchWord">Search</span></button>
+    </nav>
+
+    <!-- CHALLENGE PICKER (sheet over everything) -->
+    <div id="challenge-picker" class="challenge-sheet hidden">
+      <p class="sub" data-i18n="challengeWhich">Challenge in which chat?</p>
+      <div id="challenge-room-list" class="challenge-room-list"></div>
+      <button id="challenge-cancel" class="ghost" data-i18n="cancel">Cancel</button>
+    </div>
+
+    <!-- GROUP GAME LOBBY / RESULTS (sheet over everything) -->
+    <div id="gs-overlay" class="challenge-sheet gs-overlay hidden">
+      <div class="gs-head">
+        <b id="gs-title">Group game</b>
+        <span id="gs-demo-tag" class="demo-tag hidden" data-i18n="demoTag">demo</span>
+      </div>
+      <p id="gs-sub" class="sub"></p>
+      <div id="gs-players" class="gs-players"></div>
+      <div id="gs-standings" class="gs-standings hidden"></div>
+      <p id="gs-status" class="po-status"></p>
+      <div class="gs-actions">
+        <button id="gs-start-btn" class="primary hidden" data-i18n="gsStartMatch">Start match</button>
+        <button id="gs-back-btn" class="primary hidden" data-i18n="gsBackToChat">Back to chat</button>
+        <button id="gs-close-btn" class="ghost" data-i18n="cancel">Cancel</button>
+      </div>
+    </div>
+
+    <!-- CREATE (sheet over everything) -->
+    <div id="create-panel" class="create-panel hidden">
+      <div class="create-head">
+        <h2 data-i18n="create">Create</h2>
+        <button id="create-close" class="icon-btn" aria-label="Close" data-i18n-aria="ariaClose">✕</button>
+      </div>
+
+      <div class="door">
+        <h3><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6.5" width="18" height="12.5" rx="2.5"/><path d="M3 10.5h18M7.5 6.5l2 4M13 6.5l2 4"/></svg> <span data-i18n="recordUpload">Record / Upload</span></h3>
+        <p class="sub" data-i18n="uploadNote">Your own video, up to 20 seconds.</p>
+        <input id="upload-file" type="file" accept="video/*">
+        <div id="upload-preview" class="upload-preview hidden"></div>
+        <input id="upload-caption" type="text" maxlength="300" placeholder="Add a caption…">
+        <button id="upload-music-row" class="music-row hidden" type="button">
+          <span class="music-row-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 18.4V6.2L19.5 4.2v11.6"/><circle cx="6.8" cy="18.4" r="2.7"/><circle cx="16.8" cy="15.8" r="2.7"/></svg></span>
+          <span class="music-row-main">
+            <span class="music-row-title" data-i18n="addSong">Add a song</span>
+            <span id="upload-music-name" class="music-row-name">No song</span>
+          </span>
+          <span class="music-row-chev" aria-hidden="true">›</span>
+        </button>
+        <div id="upload-progress" class="upload-progress hidden"><div id="upload-progress-bar"></div></div>
+        <button id="upload-post-btn" class="primary hidden" data-i18n="uploadPostBtn">Post to LOOPI</button>
+        <p id="upload-status" class="form-msg"></p>
+      </div>
+
+      <div class="door">
+        <h3>✦ <span data-i18n="generateAi">Generate with AI</span></h3>
+        <p class="sub" data-i18n="generateNote">Describe it — AI makes it. The price is always on the button.</p>
+        <textarea id="gen-prompt" rows="3" maxlength="1000"></textarea>
+        <div class="seg-row" id="gen-duration">
+          <button class="seg active" data-sec="10">10s · <span data-i18n="oneCredit">1 credit</span></button>
+          <button class="seg" data-sec="20">20s · <span data-i18n="twoCredits">2 credits</span></button>
+        </div>
+        <div class="gen-row">
+          <span class="gen-balance"><span data-i18n="balance">Balance</span>: <b id="gen-balance">✦ 0</b></span>
+          <button id="gen-topup" class="ghost gen-topup" data-i18n="topUp">Top up</button>
+          <button id="gen-btn" class="primary" data-i18n="generate">Generate</button>
+        </div>
+        <p id="gen-status" class="form-msg"></p>
+        <div id="gen-result" class="gen-result hidden"></div>
+      </div>
+    </div>
+
+    <!-- PEOPLE LIST (followers / following, shared by both profiles) -->
+    <div id="people-sheet" class="comments-sheet people-sheet hidden">
+      <div class="create-head">
+        <h2 id="people-title">People</h2>
+        <button id="people-close" class="icon-btn" aria-label="Close" data-i18n-aria="ariaClose">✕</button>
+      </div>
+      <p id="people-count" class="sub"></p>
+      <div id="people-list" class="people-list"></div>
+    </div>
+
+    <!-- MUSIC PICKER ("Add a song" in the upload door; the library
+         comes from GET /v1/music — src/music.js on the server) -->
+    <div id="music-sheet" class="comments-sheet music-sheet hidden">
+      <div class="create-head">
+        <h2 data-i18n="addSong">Add a song</h2>
+        <button id="music-close" class="icon-btn" aria-label="Close" data-i18n-aria="ariaClose">✕</button>
+      </div>
+      <p class="sub" data-i18n="addSongNote">Free to use — the song replaces your video's own sound.</p>
+      <div id="music-list" class="music-list"></div>
+    </div>
+
+    <!-- EDIT PROFILE -->
+    <div id="edit-profile-sheet" class="comments-sheet hidden">
+      <div class="create-head">
+        <h2 data-i18n="editProfile">Edit profile</h2>
+        <button id="edit-profile-close" class="icon-btn" aria-label="Close" data-i18n-aria="ariaClose">✕</button>
+      </div>
+      <label class="fld"><span data-i18n="displayName">Display name</span>
+        <input id="edit-name" type="text" maxlength="60" autocomplete="name"></label>
+      <label class="fld"><span data-i18n="bioWord">Bio</span>
+        <textarea id="edit-bio" rows="3" maxlength="300"></textarea></label>
+      <p id="edit-profile-msg" class="form-msg"></p>
+      <div class="gs-actions">
+        <button id="edit-profile-save" class="primary" data-i18n="saveChanges">Save changes</button>
+        <button id="edit-profile-cancel" class="ghost" data-i18n="cancel">Cancel</button>
+      </div>
+    </div>
+
+    <!-- CREDITS (one shared purchase surface: profile Shop tab +
+         the Generate-moment popup use the same packs + buy logic) -->
+    <div id="credits-sheet" class="comments-sheet credits-sheet hidden">
+      <div class="create-head">
+        <h2 data-i18n="buyCredits">Buy credits</h2>
+        <button id="credits-close" class="icon-btn" aria-label="Close" data-i18n-aria="ariaClose">✕</button>
+      </div>
+      <div class="credits-popup-balance">
+        <span data-i18n="currentBalance">Current balance</span>
+        <b id="credits-popup-balance">✦ 0</b>
+      </div>
+      <p id="credits-popup-needed" class="sub"></p>
+      <p class="sub" data-i18n="creditsForLine">Credits power AI video generation and tips to streamers.</p>
+      <div id="popup-packs-list" class="packs-list"></div>
+      <p id="popup-packs-msg" class="form-msg"></p>
+    </div>
+
+    <!-- COMMENTS sheet -->
+    <div id="comments-sheet" class="comments-sheet hidden">
+      <div class="create-head">
+        <h2 data-i18n="comments">Comments</h2>
+        <button id="comments-close" class="icon-btn" aria-label="Close" data-i18n-aria="ariaClose">✕</button>
+      </div>
+      <div id="comments-list" class="comments-list"></div>
+      <div class="chat-input-row">
+        <input id="comment-input" type="text" maxlength="500">
+        <button id="comment-send" class="send-btn" data-i18n="send">Send</button>
+      </div>
+      <p id="comment-msg" class="form-msg"></p>
+    </div>
+
+    <!-- DELETE ACCOUNT (confirm sheet: password re-entry) -->
+    <div id="delete-sheet" class="comments-sheet hidden">
+      <div class="create-head">
+        <h2 data-i18n="deleteAccount">Delete account</h2>
+        <button id="delete-close" class="icon-btn" aria-label="Close" data-i18n-aria="ariaClose">✕</button>
+      </div>
+      <p class="sub" data-i18n="deleteAccountWarn">This permanently deletes your account, your videos, credits, earnings, messages and creator progress. There is no undo and no recovery.</p>
+      <label class="sub" for="delete-password" data-i18n="deletePasswordLabel">Enter your password to confirm</label>
+      <input id="delete-password" type="password" autocomplete="current-password">
+      <p id="delete-msg" class="form-msg"></p>
+      <div class="gs-actions">
+        <button id="delete-confirm" class="primary danger-btn" data-i18n="deleteConfirm">Delete permanently</button>
+        <button id="delete-cancel" class="ghost" data-i18n="cancel">Cancel</button>
+      </div>
+    </div>
+
+  </section>
+
+  <div id="toast" class="toast hidden"></div>
+</div>
+<script src="posters.js"></script>
+<script src="icons.js"></script>
+<script src="live-video.js"></script>
+<script src="clips.js"></script>
+<script src="app.js"></script>
+<script src="games-online.js"></script>
+<script src="foodninja.js"></script>
+<script src="group-games.js"></script>
+<script src="volfield-engine.js"></script>
+<script src="volfield.js"></script>
+</body>
+</html>
