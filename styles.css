@@ -181,3 +181,31 @@ footer.site nav{display:flex;gap:20px;flex-wrap:wrap}
 footer.site a{color:var(--ink-soft);text-decoration:none;font-weight:600}
 footer.site a:hover{text-decoration:underline}
 .fineprint{width:100%;font-size:13px;color:var(--muted)}
+
+/* ---------- order form (order.html) ---------- */
+.order-form{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+  padding:30px; box-shadow:0 8px 22px rgba(160,90,20,.07);
+}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:700px){ .form-grid{grid-template-columns:1fr} }
+.field{display:flex;flex-direction:column;gap:7px}
+.field.full{grid-column:1 / -1}
+.field label{font-family:"Sora",system-ui,sans-serif;font-weight:700;font-size:14.5px;color:var(--ink)}
+.field label .opt{font-weight:600;color:var(--muted);font-size:12.5px}
+.field input,.field select,.field textarea{
+  font:inherit;font-size:16px;color:var(--ink);
+  background:#fffdf8;border:1px solid var(--line);border-radius:14px;
+  padding:13px 15px;width:100%;appearance:none;
+}
+.field textarea{resize:vertical;min-height:110px}
+.field input:focus,.field select:focus,.field textarea:focus{
+  outline:2px solid var(--sky);outline-offset:1px;border-color:transparent;
+}
+.field .hint{font-size:13px;color:var(--muted)}
+.hp{position:absolute!important;left:-9999px!important;width:1px;height:1px;opacity:0;pointer-events:none}
+.form-status{margin-top:18px;font-size:15.5px;font-weight:600;display:none}
+.form-status.ok{display:block;color:#1d8a4e}
+.form-status.err{display:block;color:#c22e2e}
+.form-status.err a{color:#c22e2e;text-decoration:underline}
+.pkg-note{margin-top:14px;font-size:14px;color:var(--muted)}
