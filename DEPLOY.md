@@ -4,7 +4,9 @@ The site in this folder is a **plain static site** (no build step): `index.html`
 (Kay Group company homepage — "Kay Group · Building Apps For You", with the
 house apps as the portfolio), `loopi.html` (the LOOPI product landing page),
 `apps.html` (the detailed Building Apps For You services page), `order.html`
-(the studio order form), `app/` (the LOOPI web app, pre-configured to talk to
+(the studio order form), `founding.html` (the Founding Members sales page for
+the house apps — the one page that carries prices, via Stripe payment links),
+`app/` (the LOOPI web app, pre-configured to talk to
 the production API at `https://loopi-api-0szz.onrender.com`), plus
 `styles.css`, `assets/`, `robots.txt`, `sitemap.xml` and `favicon.ico`.
 
