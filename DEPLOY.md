@@ -1,10 +1,12 @@
 # DEPLOY.md — putting the LOOPI website live at www.kay-group.net
 
 The site in this folder is a **plain static site** (no build step): `index.html`
-(LOOPI landing), `apps.html` (AppKite studio page), `app/` (the LOOPI web app,
-pre-configured to talk to the production API at
-`https://loopi-api-0szz.onrender.com`), plus `styles.css`, `assets/`,
-`robots.txt`, `sitemap.xml` and `favicon.ico`.
+(Kay Group company homepage — "Kay Group · Building Apps For You", with the
+house apps as the portfolio), `loopi.html` (the LOOPI product landing page),
+`apps.html` (the detailed Building Apps For You services page), `order.html`
+(the studio order form), `app/` (the LOOPI web app, pre-configured to talk to
+the production API at `https://loopi-api-0szz.onrender.com`), plus
+`styles.css`, `assets/`, `robots.txt`, `sitemap.xml` and `favicon.ico`.
 
 All canonical / Open Graph URLs in the pages already point at
 `https://www.kay-group.net/`, so no edits are needed at deploy time — the one
@@ -98,8 +100,8 @@ sitemap. Bing also powers DuckDuckGo/Yahoo results.
 
 ## Updating the site later
 
-- **Landing/studio pages:** edit `index.html` / `apps.html` / `styles.css`,
-  re-push, Render redeploys automatically.
+- **Company/studio pages:** edit `index.html` / `loopi.html` / `apps.html` /
+  `order.html` / `styles.css`, re-push, Render redeploys automatically.
 - **Web app (`/app/`):** it's a snapshot of `~/workspace/nocta/app/` with
   `CONFIG.apiBase` flipped to the production API (same sed the iOS staging
   uses). When the app ships new features, re-copy `nocta/app/` over `app/`,
