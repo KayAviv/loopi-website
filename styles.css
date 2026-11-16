@@ -106,7 +106,8 @@ section.block{padding:64px 0 8px}
 .grid{display:grid;gap:18px}
 .grid.features{grid-template-columns:repeat(3,1fr)}
 .grid.two{grid-template-columns:repeat(2,1fr)}
-@media (max-width:900px){ .grid.features{grid-template-columns:repeat(2,1fr)} }
+.grid.three{grid-template-columns:repeat(3,1fr)}
+@media (max-width:900px){ .grid.features{grid-template-columns:repeat(2,1fr)} .grid.three{grid-template-columns:1fr} }
 @media (max-width:600px){ .grid.features,.grid.two{grid-template-columns:1fr} }
 .card{
   background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
