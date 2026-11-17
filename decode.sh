@@ -12,6 +12,17 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
+# Assemble chunked sidecars first: a large binary is stored as
+# "<name>.b64.part01", "<name>.b64.part02", ... (zero-padded, sorted order).
+# Concatenate the parts back into "<name>.b64"; the decode pass below then
+# handles it like any other sidecar.
+while IFS= read -r -d '' first; do
+  b64="${first%.part01}"
+  cat "${b64}".part* > "$b64"
+  rm -f "${b64}".part*
+  echo "decode.sh: assembled $b64 from chunks"
+done < <(find . -type f -name '*.b64.part01' -print0)
+
 count=0
 while IFS= read -r -d '' b64; do
   target="${b64%.b64}"
