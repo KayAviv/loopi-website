@@ -5482,6 +5482,9 @@ function paintStory() {
   $('story-caption').textContent = st.caption || '';
   $('story-like').textContent = '♥ ' + fmtCount(st.likeCount || 0);
   var own = !!(S.user && g.user && g.user.id === S.user.id);
+  /* The server refuses reactions to your own story — offer Delete
+   * there instead of a Like button that can only error. */
+  $('story-like').classList.toggle('hidden', own);
   $('story-delete').classList.toggle('hidden', !own);
   apiNote('story-msg', '');
   markStorySeen(g, st);
@@ -5642,8 +5645,12 @@ function paintHelperUsage(u) {
   var buy = $('helper-buy-pack');
   if (!n || !buy) return;
   if (!u) { n.textContent = ''; buy.classList.add('hidden'); return; }
-  if (u.unlimited) { n.textContent = 'Premium: unlimited Helper messages.'; buy.classList.add('hidden'); return; }
-  var left = Math.max(0, (u.allowance || 0) - (u.used || 0));
+  if (u.unlimited || u.premium) { n.textContent = 'Premium: unlimited Helper messages.'; buy.classList.add('hidden'); return; }
+  /* The live server reports {freeUsed, freeLimit}; the local service
+   * shape is {used, allowance} — read whichever is present. */
+  var limit = typeof u.freeLimit === 'number' ? u.freeLimit : (u.allowance || 0);
+  var used = typeof u.freeUsed === 'number' ? u.freeUsed : (u.used || 0);
+  var left = Math.max(0, limit - used);
   n.textContent = left + ' free Helper messages left today' +
     ((u.packBalance || 0) > 0 ? ' · ' + u.packBalance + ' pack messages' : '') + '.';
   buy.classList.toggle('hidden', left > 0 || (u.packBalance || 0) > 0);
