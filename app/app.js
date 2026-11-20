@@ -4786,18 +4786,30 @@ function renderLeaderboard() {
   var lbT = el('span', null); lbT.innerHTML = LOOPI_ICONS.svg('trophy', 'ic ic-inline gold-ic'); lbT.appendChild(document.createTextNode(' ' + t('leaderboard'))); head.appendChild(lbT);
   head.appendChild(el('span', 'demo-tag', t('demoTag')));
   wrap.appendChild(head);
-  var youRow = el('div', 'lb-row me');
-  youRow.appendChild(el('span', 'mini-avatar', initial(S.user ? S.user.displayName : 'Y')));
-  youRow.appendChild(el('span', 'lb-who', '@' + (S.user ? S.user.handle : 'you')));
-  youRow.appendChild(el('span', 'lb-wins', gameWinCount + ' ' + t('wins')));
-  wrap.appendChild(youRow);
-  DEMO_LEADERBOARD.forEach(function (r, i) {
+  /* Ranked insertion (2026-11-19, QA bug 19): the viewer's own
+   * row used to be pinned ABOVE the ranked list unconditionally,
+   * so a brand-new 0-win player appeared ahead of the 21-win
+   * leader. The board is now one list sorted by wins DESC (ties
+   * keep their previous relative order) and every row — the
+   * viewer's included — carries its true rank. */
+  var board = DEMO_LEADERBOARD.map(function (r) {
     var c = DEMO_CREATORS[r.creator];
-    var row = el('div', 'lb-row');
+    return { who: '@' + c.handle, name: c.displayName, gameId: r.gameId, wins: r.wins, me: false };
+  });
+  board.push({
+    who: '@' + (S.user ? S.user.handle : 'you'),
+    name: S.user ? S.user.displayName : 'Y',
+    gameId: null, wins: gameWinCount, me: true
+  });
+  board.sort(function (a, b) { return b.wins - a.wins; });
+  board.forEach(function (r, i) {
+    var row = el('div', 'lb-row' + (r.me ? ' me' : ''));
     row.appendChild(el('span', 'lb-rank', '#' + (i + 1)));
-    row.appendChild(el('span', 'mini-avatar', initial(c.displayName)));
-    row.appendChild(el('span', 'lb-who', '@' + c.handle));
-    var lbIc = el('span', 'lb-game-ic'); lbIc.innerHTML = LOOPI_ICONS.gameImg(r.gameId, 'game-png-sm'); row.appendChild(lbIc);
+    row.appendChild(el('span', 'mini-avatar', initial(r.name)));
+    row.appendChild(el('span', 'lb-who', r.who));
+    if (r.gameId) {
+      var lbIc = el('span', 'lb-game-ic'); lbIc.innerHTML = LOOPI_ICONS.gameImg(r.gameId, 'game-png-sm'); row.appendChild(lbIc);
+    }
     row.appendChild(el('span', 'lb-wins', r.wins + ' ' + t('wins')));
     wrap.appendChild(row);
   });
