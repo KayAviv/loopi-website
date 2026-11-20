@@ -1614,7 +1614,7 @@ function boostLabel(boost) {
 /* ---------------- screens + tabs ---------------- */
 var PANELS = ['home', 'discover', 'live', 'games', 'inbox', 'profile', 'settings', 'chat', 'live-room',
   'notifications', 'creator',
-  'game-penalty', 'game-pong', 'game-volley', 'game-poker', 'game-foodninja', 'game-volfield'];
+  'game-penalty', 'game-pong', 'game-volley', 'game-poker', 'game-foodninja', 'game-volfield', 'helper'];
 function showScreen(id) {
   var screens = ['screen-auth', 'screen-onboarding', 'screen-main'];
   for (var i = 0; i < screens.length; i++) {
@@ -1640,6 +1640,7 @@ function showPanel(name) {
   if (name === 'home') { maybeShowBubble(); playVisibleVideo(); rtPaintPill(); }
   if (name === 'games') renderGamesHub();
   if (name === 'discover') { renderCompetition(); loadCompetitions(); }
+  if (name === 'helper') loadHelper();
 }
 /* The 3-button bar (Kay 22:25): Feed · Profile · Search. It hides
  * while a sheet, the chat overlay, the create panel or a focused
@@ -1647,7 +1648,8 @@ function showPanel(name) {
 var BOTTOM_HIDE_PANELS = { chat: 1, 'live-room': 1 };
 function anySheetOpen() {
   var ids = ['create-panel', 'comments-sheet', 'delete-sheet', 'challenge-picker',
-    'gs-overlay', 'people-sheet', 'edit-profile-sheet', 'credits-sheet', 'music-sheet'];
+    'gs-overlay', 'people-sheet', 'edit-profile-sheet', 'credits-sheet', 'music-sheet',
+    'story-viewer', 'story-post-sheet', 'report-sheet'];
   for (var i = 0; i < ids.length; i++) {
     var n = $(ids[i]);
     if (n && !n.classList.contains('hidden')) return true;
@@ -1751,6 +1753,7 @@ function setFeedTab(tab) {
   S.feedTab = tab;
   $('ftab-following').classList.toggle('on', tab === 'following');
   $('ftab-foryou').classList.toggle('on', tab === 'foryou');
+  var nb = $('ftab-nearby'); if (nb) nb.classList.toggle('on', tab === 'nearby');
   /* Bug fix (QA #4): the Following tab used to just re-render the same
    * For You items (its only filter was a hardcoded demo handle list).
    * Real accounts now fetch the server-filtered following feed. */
@@ -1879,12 +1882,6 @@ function notifAct(n, action) {
 }
 
 /* ---------------- shared profile pieces ---------------- */
-function profileLevelLine(u) {
-  if (!u) return '';
-  var lv = levelForLevel(u.creatorLevel || levelForXp(u.xp || 0).level);
-  var name = levelDisplayName(lv.name);
-  return 'L' + lv.level + ' · ' + name + (typeof u.xp === 'number' ? ' — ' + u.xp + ' XP' : '');
-}
 function profileVideoTile(v) {
   var sq = el('div', 'square profile-square');
   var sp = posterSrc(v);
@@ -2027,7 +2024,6 @@ function renderCreator() {
   $('creator-handle').textContent = '@' + u.handle;
   $('creator-private-chip').classList.toggle('hidden', !u.isPrivate);
   $('creator-bio').textContent = u.locked ? '' : (u.bio || '');
-  $('creator-level-line').textContent = u.locked ? '' : profileLevelLine(u);
   $('creator-video-count').textContent = fmtCount(u.locked ? 0 : (p.videos || []).length);
   $('creator-followers-count').textContent = fmtCount(u.followersCount || 0);
   $('creator-following-count').textContent = fmtCount(u.followingCount || 0);
@@ -2147,6 +2143,8 @@ function paintBioUnlockButton() {
 }
 function paintSettings() {
   paintBioSettings();
+  loadAccountSettings();
+  loadBlocked();
   var pub = $('privacy-public'), prv = $('privacy-private');
   if (!pub || !prv) return;
   var priv = currentPrivacy();
@@ -2204,6 +2202,7 @@ function setAuthMode(mode) {
   /* Forgot password belongs to the login side only. */
   var fk = $('auth-forgot-link'); if (fk) fk.classList.toggle('hidden', mode !== 'login');
   if (mode !== 'login') { var rp = $('reset-panel'); if (rp) hide(rp); }
+  var tp = $('tfa-panel'); if (tp) hide(tp);
   $('auth-submit').textContent = t(mode === 'login' ? 'login' : 'signup');
 }
 /* ---------------- password reset (QA #5) ----------------
@@ -2263,6 +2262,7 @@ function enterApp(needsOnboarding) {
   showPanel('home');
   refreshCreditsPill();
   loadFeed();
+  loadStories();
   loadRooms();
   loadLive();
   loadCreatorLevels();
@@ -2320,6 +2320,15 @@ function submitAuth() {
   } else {
     api('/v1/login', { method: 'POST', body: { email: email, password: password } }).then(function (r) {
       btn.disabled = false;
+      /* Two-factor: the server answers 200 with twoFactorRequired and
+       * NO token and NO user — the code goes to the account's email;
+       * the verify step (POST /v1/login/verify) returns the real
+       * login payload. (Before this branch, a 2FA account's sign-in
+       * crashed on the missing user object.) */
+      if (r.data && r.data.twoFactorRequired) {
+        showTfaPanel(r.data.email || email);
+        return;
+      }
       saveToken(r.data.token);
       S.user = r.data.user; S.demo = false;
       /* Bug fix (QA #7): onboarding re-appeared on EVERY sign-in for
@@ -2442,12 +2451,6 @@ function finishOnboarding() {
 }
 
 /* ---------------- feed ---------------- */
-function levelTagOf(owner) {
-  if (!owner) return '';
-  var lv = owner.creatorLevel || 1;
-  var name = owner.levelName || levelForLevel(lv).name;
-  return 'L' + lv + ' · ' + name;
-}
 var demoToastShown = false;
 function noteDemoOnce() {
   if (demoToastShown) return;
@@ -2608,13 +2611,19 @@ function rtAppendNewMessages() {
 }
 function loadFeed() {
   if (S.demo || !S.token) {
+    if (S.feedTab === 'nearby') { S.feed = []; renderAreaPrompt(); return; }
     S.feed = DEMO_FEED.slice();
     renderFeed();
     noteDemoOnce();
     return;
   }
   var following = S.feedTab === 'following';
-  api(following ? '/v1/feed?tab=following' : '/v1/feed').then(function (r) {
+  var nearby = S.feedTab === 'nearby';
+  var feedPath = following ? '/v1/feed?tab=following' : (nearby ? '/v1/feed?tab=nearby' : '/v1/feed');
+  api(feedPath).then(function (r) {
+    /* Nearby with no home area saved: the server answers needsArea
+     * instead of videos — ask for the area right here. */
+    if (nearby && r.data && r.data.needsArea) { S.feed = []; renderAreaPrompt(); return; }
     var vids = r.data.videos || [];
     /* Bug fix (QA #10): the same underlying media seeded as several
      * posts read as one video repeated over and over. Collapse exact
@@ -2626,13 +2635,13 @@ function loadFeed() {
       seenMedia[k] = 1;
       return true;
     });
-    if (!S.feed.length && !following) {
+    if (!S.feed.length && !following && !nearby) {
       S.feed = DEMO_FEED.slice();
       noteDemoOnce();
     }
     renderFeed();
   }).catch(function () {
-    if (following) { S.feed = []; renderFeed(); return; }
+    if (following || nearby) { S.feed = []; renderFeed(); return; }
     S.feed = DEMO_FEED.slice();
     noteDemoOnce();
     renderFeed();
@@ -2682,7 +2691,9 @@ function renderFeed() {
   if (!items.length) {
     feed.appendChild(el('p', 'sub', S.feedTab === 'following'
       ? 'Nothing here yet — follow some creators and their newest videos will land in this tab.'
-      : 'Nothing here yet.'));
+      : (S.feedTab === 'nearby'
+        ? 'No videos from your area yet — be the first to post one.'
+        : 'Nothing here yet.')));
   }
   /* Bug fix (QA #9): the placeholder "AD SLOT" cards are gone — there
    * is no ad backend behind them, and they read as broken content.
@@ -2729,8 +2740,6 @@ function videoCard(item) {
   authorRow.appendChild(anEl);
   if (item.kind === 'ai') authorRow.appendChild(el('span', 'aibadge', '✦ AI'));
   else authorRow.appendChild(el('span', 'filmed-chip', t('filmed')));
-  var lt = levelTagOf(item.owner);
-  if (lt) authorRow.appendChild(el('span', 'level-tag', lt));
   meta.appendChild(authorRow);
   if (item.caption) meta.appendChild(el('p', 'caption', item.caption));
   if (item.hashtags && item.hashtags.length) {
@@ -2761,6 +2770,9 @@ function videoCard(item) {
   rail.appendChild(railBtn(LOOPI_ICONS.svg('comment'), item.commentCount >= 10000 ? fmtCount(item.commentCount) : Number(item.commentCount).toLocaleString('en-US'), function () { openComments(item); }, 'comment'));
   rail.appendChild(railBtn(LOOPI_ICONS.svg('share'), t('share'), function () { shareVideo(item); }, 'share'));
   rail.appendChild(railBtn(LOOPI_ICONS.svg('repeat'), t('remix'), function () { openCreate(item.prompt || null); }, 'remix'));
+  rail.appendChild(railBtn('⋯', 'More', function () {
+    openReportSheet({ video: item, user: item.owner });
+  }, 'more'));
   card.appendChild(rail);
 
   /* thin progress track, acid-lime fill, at the very bottom */
@@ -3488,6 +3500,11 @@ function submitGenerate() {
  * responses): keep the local user in sync and celebrate level-ups
  * and new badges instead of letting them pass silently. */
 function applyXpAward(xa) {
+  /* Kay (2026-11-19): no app-wide XP leveling — XP awards from the
+   * server are accepted silently (games keep their own internal
+   * progression), level-up celebrations and level badges are not
+   * shown anywhere outside the games. Non-level badges still get
+   * their toast. */
   if (!xa || !S.user) return;
   if (typeof xa.totalXp === 'number') S.user.xp = xa.totalXp;
   if (typeof xa.creatorLevel === 'number') S.user.creatorLevel = xa.creatorLevel;
@@ -3495,10 +3512,12 @@ function applyXpAward(xa) {
     if (!Array.isArray(S.user.badges)) S.user.badges = [];
     var held = {};
     S.user.badges.forEach(function (b) { held[b.id || b] = true; });
-    xa.newBadges.forEach(function (b) { if (b && !held[b.id]) S.user.badges.push(b); });
-    toast(t('badgeToast') + xa.newBadges.map(function (b) { return badgeDisplayName(b); }).join(', '));
-  } else if (xa.levelledUp) {
-    toast(t('levelUpToast') + ' ' + t('level') + ' ' + xa.creatorLevel);
+    var fresh = [];
+    xa.newBadges.forEach(function (b) {
+      if (!b || (typeof b.id === 'string' && b.id.indexOf('level_') === 0)) return;
+      if (!held[b.id]) { S.user.badges.push(b); fresh.push(b); }
+    });
+    if (fresh.length) toast(t('badgeToast') + fresh.map(function (b) { return badgeDisplayName(b); }).join(', '));
   }
   paintProfile();
 }
@@ -4506,8 +4525,6 @@ function buyPack(pack, msg, fromPopup) {
 function userTags(user) {
   if (!user) return [];
   var tags = [];
-  var lv = levelForLevel(user.creatorLevel || 1);
-  tags.push('L' + lv.level + ' · ' + levelDisplayName(lv.name).toUpperCase());
   if ((user.xp || 0) >= 50) tags.push(t('tagUploader'));
   if ((user.interests || []).length >= 5) tags.push(t('tagExplorer'));
   return tags;
@@ -4519,10 +4536,11 @@ function userBadges(user) {
    * id/name/icon); they are the real name tags, not derived guesses. */
   if (Array.isArray(user.badges)) {
     user.badges.forEach(function (b) {
+      /* Level badges (level_2..level_5) belong to the retired
+       * app-wide leveling system — never rendered on a profile. */
+      if (b && typeof b.id === 'string' && b.id.indexOf('level_') === 0) return;
       badges.push(badgeDisplayName(b));
     });
-  } else if ((user.creatorLevel || 1) >= 2) {
-    badges.push(t('level') + ' ' + user.creatorLevel);
   }
   if ((user.interests || []).length) badges.push(user.interests.length + ' ' + t('interestsWord'));
   return badges;
@@ -4538,10 +4556,6 @@ function computeNextBadge(u) {
   if (!held.first_upload) cands.push({ id: 'first_upload', progress: 0, target: 1 });
   if (!held.likes_100) cands.push({ id: 'likes_100', progress: u.totalLikes || 0, target: 100 });
   if (!held.streak_7) cands.push({ id: 'streak_7', progress: (u.streak && u.streak.longest) || u.streakDays || 0, target: 7 });
-  var lv = levelForXp(xp);
-  var next = null;
-  for (var i = 0; i < CREATOR_LEVELS.length; i++) if (CREATOR_LEVELS[i].level === lv.level + 1) next = CREATOR_LEVELS[i];
-  if (next && !held['level_' + next.level]) cands.push({ id: 'level_' + next.level, progress: xp, target: next.minXp });
   if (!cands.length) return null;
   cands.sort(function (a, b) { return (b.progress / b.target) - (a.progress / a.target); });
   var c = cands[0];
@@ -4599,9 +4613,12 @@ function setProfileTab(tab) {
   S.profileTab = tab;
   $('profile-tab-videos').classList.toggle('active', tab === 'videos');
   $('profile-tab-shop').classList.toggle('active', tab === 'shop');
+  var ht = $('profile-tab-history'); if (ht) ht.classList.toggle('active', tab === 'history');
   $('profile-videos-pane').classList.toggle('hidden', tab !== 'videos');
   $('profile-shop-pane').classList.toggle('hidden', tab !== 'shop');
+  var hp = $('profile-history-pane'); if (hp) hp.classList.toggle('hidden', tab !== 'history');
   if (tab === 'shop') renderProfileCredits();
+  if (tab === 'history') loadHistory();
 }
 function paintProfile() {
   var u = S.user;
@@ -4612,10 +4629,6 @@ function paintProfile() {
   $('profile-name').textContent = u.displayName;
   $('profile-handle').textContent = '@' + u.handle + (S.demo ? ' · demo' : '');
   $('profile-bio').textContent = u.bio || '';
-  /* Kay 22:26: the creator level is DEMOTED to one small, quiet
-   * line under the bio. No card, no strip, no hero placement. (It
-   * still drives distribution in the backend, unchanged.) */
-  $('profile-level-line').textContent = profileLevelLine(u);
   var badges = $('profile-badges');
   badges.innerHTML = '';
   userBadges(u).forEach(function (x) { badges.appendChild(el('span', 'badge', x)); });
@@ -5318,6 +5331,622 @@ function pongDraw() {
 }
 
 /* ---------------- wiring + boot ---------------- */
+/* ================= fix pass 2 (2026-11-19): bug #14 remainder ====
+ * Stories, Nearby, AI Helper, Report/Block, Watch history, and the
+ * account-security settings (2FA toggle, change email, change
+ * handle, home area). Every surface talks to server endpoints that
+ * already existed (src/app.js, w2-routes-ws4.js, w3ws3-ai.js); demo
+ * mode gets honest local stand-ins or an account-required note —
+ * never a fake success. */
+
+function apiNote(elId, text, isError) {
+  var n = $(elId);
+  if (!n) return;
+  n.textContent = text || '';
+  n.classList.toggle('error', !!isError);
+}
+
+/* ---------- stories ---------- */
+var storyGroups = [];
+var storyView = { gi: 0, si: 0 };
+
+function storyMediaSrc(st) {
+  if (!st) return '';
+  if (st.demoItem) return clipSrc(st.demoItem) || mediaSrc(st.demoItem.sourceUrl) || '';
+  return mediaSrc(st.sourceUrl) || '';
+}
+function storyPosterSrc(st) {
+  if (!st) return '';
+  if (st.demoItem) return posterSrc(st.demoItem) || '';
+  return st.posterUrl ? mediaSrc(st.posterUrl) : '';
+}
+function demoStoryGroups() {
+  var byHandle = {};
+  var order = [];
+  DEMO_FEED.forEach(function (item) {
+    if (!item.owner || !item.owner.handle) return;
+    if (!byHandle[item.owner.handle]) {
+      byHandle[item.owner.handle] = { user: item.owner, stories: [], allSeen: false, demo: true };
+      order.push(item.owner.handle);
+    }
+    byHandle[item.owner.handle].stories.push({
+      id: 'demo-story-' + item.id, demoItem: item, mediaKind: 'video',
+      caption: item.caption || '', likeCount: item.likeCount || 0,
+      createdAt: item.createdAt || Date.now()
+    });
+  });
+  return order.map(function (h) { return byHandle[h]; }).filter(function (g) { return g.stories.length; });
+}
+function loadStories() {
+  var rail = $('stories-rail');
+  if (!rail) return;
+  if (S.demo || !S.token) {
+    storyGroups = demoStoryGroups();
+    renderStoriesRail();
+    return;
+  }
+  api('/v1/stories').then(function (r) {
+    storyGroups = (r.data && r.data.groups) || [];
+    renderStoriesRail();
+  }).catch(function () { storyGroups = []; renderStoriesRail(); });
+}
+function renderStoriesRail() {
+  var rail = $('stories-rail');
+  if (!rail) return;
+  rail.innerHTML = '';
+  var mine = null;
+  storyGroups.forEach(function (g) { if (S.user && g.user && g.user.id === S.user.id) mine = g; });
+  var add = el('button', 'story-cell story-add');
+  add.type = 'button';
+  var addRing = el('span', 'story-ring own');
+  addRing.appendChild(el('span', 'story-ava', initial(S.user ? S.user.displayName : 'Y')));
+  add.appendChild(addRing);
+  add.appendChild(el('span', 'story-name', 'Your story'));
+  add.appendChild(el('span', 'story-plus', '+'));
+  add.addEventListener('click', function () {
+    if (mine) openStoryGroup(storyGroups.indexOf(mine));
+    else openStoryPost();
+  });
+  rail.appendChild(add);
+  storyGroups.forEach(function (g, gi) {
+    if (mine && g === mine) return;
+    var cell = el('button', 'story-cell');
+    cell.type = 'button';
+    var ring = el('span', 'story-ring' + (g.allSeen ? ' seen' : ''));
+    var ava = el('span', 'story-ava');
+    if (g.user && g.user.avatarUrl) {
+      var img = document.createElement('img');
+      img.src = mediaSrc(g.user.avatarUrl);
+      img.alt = '';
+      ava.appendChild(img);
+    } else {
+      ava.textContent = initial(g.user ? g.user.displayName : '?');
+      ava.style.background = (g.user && g.user.avatarBg) || gradientFor(g.user ? g.user.handle : '');
+    }
+    ring.appendChild(ava);
+    cell.appendChild(ring);
+    cell.appendChild(el('span', 'story-name', '@' + (g.user ? g.user.handle : '')));
+    cell.addEventListener('click', function () { openStoryGroup(gi); });
+    rail.appendChild(cell);
+  });
+  rail.classList.remove('hidden');
+}
+function openStoryGroup(gi) {
+  if (!storyGroups[gi] || !storyGroups[gi].stories.length) return;
+  storyView = { gi: gi, si: 0 };
+  show($('story-viewer'));
+  updateBottomBar();
+  paintStory();
+}
+function closeStoryViewer() {
+  var st = $('story-stage');
+  if (st) st.innerHTML = '';
+  hide($('story-viewer'));
+  updateBottomBar();
+}
+function paintStory() {
+  var g = storyGroups[storyView.gi];
+  if (!g) { closeStoryViewer(); return; }
+  var st = g.stories[storyView.si];
+  if (!st) { closeStoryViewer(); return; }
+  $('story-viewer-title').textContent = '@' + (g.user ? g.user.handle : '') + ' · ' +
+    new Date(st.createdAt || Date.now()).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  var seg = $('story-segments');
+  seg.innerHTML = '';
+  g.stories.forEach(function (_, i) {
+    seg.appendChild(el('span', 'story-seg' + (i < storyView.si ? ' done' : (i === storyView.si ? ' now' : ''))));
+  });
+  var stage = $('story-stage');
+  stage.innerHTML = '';
+  var src = storyMediaSrc(st);
+  if (st.mediaKind === 'photo') {
+    var img = document.createElement('img');
+    img.className = 'story-media';
+    img.src = src;
+    img.alt = '';
+    stage.appendChild(img);
+  } else {
+    var vid = document.createElement('video');
+    vid.className = 'story-media';
+    vid.src = src;
+    var ps = storyPosterSrc(st);
+    if (ps) vid.poster = ps;
+    vid.autoplay = true;
+    vid.loop = true;
+    vid.setAttribute('playsinline', '');
+    vid.addEventListener('click', function () { if (vid.paused) vid.play(); else vid.pause(); });
+    stage.appendChild(vid);
+    var pr = vid.play();
+    if (pr && pr.catch) pr.catch(function () {});
+  }
+  $('story-caption').textContent = st.caption || '';
+  $('story-like').textContent = '♥ ' + fmtCount(st.likeCount || 0);
+  var own = !!(S.user && g.user && g.user.id === S.user.id);
+  $('story-delete').classList.toggle('hidden', !own);
+  apiNote('story-msg', '');
+  markStorySeen(g, st);
+}
+function stepStory(d) {
+  var g = storyGroups[storyView.gi];
+  if (!g) return;
+  var nsi = storyView.si + d;
+  if (nsi < 0) nsi = 0;
+  if (nsi >= g.stories.length) {
+    var ngi = storyView.gi + 1;
+    if (storyGroups[ngi]) { storyView = { gi: ngi, si: 0 }; paintStory(); }
+    else closeStoryViewer();
+    return;
+  }
+  storyView.si = nsi;
+  paintStory();
+}
+function markStorySeen(g, st) {
+  if (S.demo || !S.token || !st || !st.id || String(st.id).indexOf('demo-') === 0) return;
+  api('/v1/stories/' + encodeURIComponent(st.id) + '/seen', { method: 'POST', body: {} })
+    .then(function () {
+      st.seenByMe = true;
+      if (g.stories.every(function (x) { return x.seenByMe; })) g.allSeen = true;
+    }).catch(function () {});
+}
+function likeCurrentStory() {
+  var g = storyGroups[storyView.gi];
+  var st = g && g.stories[storyView.si];
+  if (!st) return;
+  if (S.demo || String(st.id).indexOf('demo-') === 0) {
+    st.likeCount = (st.likeCount || 0) + 1;
+    $('story-like').textContent = '♥ ' + fmtCount(st.likeCount);
+    return;
+  }
+  api('/v1/stories/' + encodeURIComponent(st.id) + '/react', { method: 'POST', body: { kind: 'like' } })
+    .then(function (r) {
+      if (r.data && typeof r.data.likeCount === 'number') st.likeCount = r.data.likeCount;
+      $('story-like').textContent = '♥ ' + fmtCount(st.likeCount || 0);
+    }).catch(function (e) { apiNote('story-msg', localizedError(e), true); });
+}
+function deleteCurrentStory() {
+  var g = storyGroups[storyView.gi];
+  var st = g && g.stories[storyView.si];
+  if (!st || S.demo || !S.token) return;
+  api('/v1/stories/' + encodeURIComponent(st.id), { method: 'DELETE' }).then(function () {
+    g.stories.splice(storyView.si, 1);
+    toast('Story deleted.');
+    if (!g.stories.length) { closeStoryViewer(); loadStories(); }
+    else {
+      if (storyView.si >= g.stories.length) storyView.si = g.stories.length - 1;
+      paintStory();
+    }
+  }).catch(function (e) { apiNote('story-msg', localizedError(e), true); });
+}
+function openStoryPost() {
+  if (S.demo || !S.token) { toast('Stories need a real account — you are browsing the demo.'); return; }
+  var list = $('story-post-list');
+  list.innerHTML = '';
+  apiNote('story-post-msg', '');
+  var vids = ownVideos();
+  if (!vids.length) {
+    list.appendChild(el('p', 'sub', 'You have no videos yet — post a video first, then share it as a story.'));
+  }
+  vids.forEach(function (v) {
+    var row = el('button', 'people-row');
+    row.type = 'button';
+    var av = el('span', 'mini-avatar', '▶');
+    row.appendChild(av);
+    var main = el('span', 'people-main');
+    main.appendChild(el('span', 'people-name', v.caption || 'Untitled video'));
+    main.appendChild(el('span', 'people-handle', 'Tap to post as a story · up for 24 hours'));
+    row.appendChild(main);
+    row.addEventListener('click', function () { postStory(v.id); });
+    list.appendChild(row);
+  });
+  show($('story-post-sheet'));
+  updateBottomBar();
+}
+function postStory(videoId) {
+  api('/v1/stories', { method: 'POST', body: { videoId: videoId } }).then(function () {
+    hide($('story-post-sheet'));
+    updateBottomBar();
+    toast('Story posted — it stays up for 24 hours.');
+    loadStories();
+  }).catch(function (e) { apiNote('story-post-msg', localizedError(e), true); });
+}
+
+/* ---------- nearby ---------- */
+function renderAreaPrompt() {
+  var feed = $('feed');
+  if (!feed) return;
+  feed.innerHTML = '';
+  var box = el('div', 'area-prompt');
+  box.appendChild(el('h3', null, 'See videos from your area'));
+  box.appendChild(el('p', 'sub', 'Tell LOOPI your home area and the Nearby tab shows videos posted from there. Your area is only used for this feed.'));
+  var input = document.createElement('input');
+  input.type = 'text';
+  input.maxLength = 60;
+  input.placeholder = 'e.g. Vernon';
+  input.className = 'area-input';
+  if (S.user && S.user.homeArea) input.value = S.user.homeArea;
+  box.appendChild(input);
+  var msg = el('p', 'form-msg');
+  var btn = el('button', 'primary', 'Save and show Nearby');
+  btn.type = 'button';
+  btn.addEventListener('click', function () {
+    var area = input.value.trim();
+    if (!area) { msg.textContent = 'Type your area first.'; msg.classList.add('error'); return; }
+    saveHomeArea(area, msg, function () { loadFeed(); });
+  });
+  box.appendChild(btn);
+  box.appendChild(msg);
+  feed.appendChild(box);
+}
+function saveHomeArea(area, msgEl, done) {
+  if (S.demo || !S.token) {
+    if (msgEl) { msgEl.textContent = 'Home area needs a real account — you are browsing the demo.'; msgEl.classList.add('error'); }
+    return;
+  }
+  api('/v1/me', { method: 'PATCH', body: { homeArea: area } }).then(function (r) {
+    if (S.user) S.user.homeArea = (r.data && r.data.user && r.data.user.homeArea) || area;
+    if (msgEl) { msgEl.textContent = 'Home area saved.'; msgEl.classList.remove('error'); }
+    if (done) done();
+  }).catch(function (e) {
+    if (msgEl) { msgEl.textContent = localizedError(e); msgEl.classList.add('error'); }
+  });
+}
+
+/* ---------- AI helper ---------- */
+function loadHelper() {
+  var box = $('helper-messages');
+  if (!box) return;
+  if (S.demo || !S.token) {
+    box.innerHTML = '';
+    box.appendChild(el('p', 'sub', 'The AI Helper needs a real account — you are browsing the demo.'));
+    $('helper-usage').textContent = '';
+    $('helper-buy-pack').classList.add('hidden');
+    return;
+  }
+  api('/v1/helper').then(function (r) {
+    paintHelper(r.data);
+  }).catch(function (e) { apiNote('helper-msg', localizedError(e), true); });
+}
+function paintHelper(data) {
+  var box = $('helper-messages');
+  box.innerHTML = '';
+  var msgs = (data && data.messages) || [];
+  if (!msgs.length) box.appendChild(el('p', 'sub', 'No messages yet — ask the Helper anything about LOOPI.'));
+  msgs.forEach(function (m) {
+    box.appendChild(el('div', 'msg ' + (m.role === 'user' ? 'me' : 'them'), m.text || ''));
+  });
+  box.scrollTop = box.scrollHeight;
+  paintHelperUsage(data && data.usage);
+}
+function paintHelperUsage(u) {
+  var n = $('helper-usage');
+  var buy = $('helper-buy-pack');
+  if (!n || !buy) return;
+  if (!u) { n.textContent = ''; buy.classList.add('hidden'); return; }
+  if (u.unlimited) { n.textContent = 'Premium: unlimited Helper messages.'; buy.classList.add('hidden'); return; }
+  var left = Math.max(0, (u.allowance || 0) - (u.used || 0));
+  n.textContent = left + ' free Helper messages left today' +
+    ((u.packBalance || 0) > 0 ? ' · ' + u.packBalance + ' pack messages' : '') + '.';
+  buy.classList.toggle('hidden', left > 0 || (u.packBalance || 0) > 0);
+}
+function sendHelper() {
+  var input = $('helper-input');
+  var text = input.value.trim();
+  if (!text) return;
+  if (S.demo || !S.token) { apiNote('helper-msg', 'The AI Helper needs a real account.', true); return; }
+  input.value = '';
+  apiNote('helper-msg', '');
+  var box = $('helper-messages');
+  box.appendChild(el('div', 'msg me', text));
+  box.scrollTop = box.scrollHeight;
+  api('/v1/helper/messages', { method: 'POST', body: { text: text } }).then(function () {
+    loadHelper();
+  }).catch(function (e) {
+    apiNote('helper-msg', localizedError(e), true);
+    loadHelper();
+  });
+}
+function buyHelperPack() {
+  if (S.demo || !S.token) return;
+  api('/v1/helper/buy-pack', { method: 'POST', body: {} }).then(function (r) {
+    if (r.data && typeof r.data.balance === 'number') {
+      S.credits.balance = r.data.balance;
+      refreshCreditsPill();
+    }
+    paintHelperUsage(r.data && r.data.usage);
+    toast('Message pack added.');
+  }).catch(function (e) { apiNote('helper-msg', localizedError(e), true); });
+}
+
+/* ---------- report / block ---------- */
+var reportCtx = null;
+var blockedIds = {};
+function isBlockedId(id) { return !!(id && blockedIds[id]); }
+function refreshBlockedIds(done) {
+  if (S.demo || !S.token) { blockedIds = {}; if (done) done(); return; }
+  api('/v1/blocks').then(function (r) {
+    blockedIds = {};
+    ((r.data && r.data.blocks) || []).forEach(function (b) { if (b.user) blockedIds[b.user.id] = true; });
+    if (done) done();
+  }).catch(function () { if (done) done(); });
+}
+function openReportSheet(ctx) {
+  reportCtx = ctx || {};
+  var u = reportCtx.user;
+  $('report-title').textContent = reportCtx.video ? 'Report video' : 'Report';
+  $('report-target').textContent = reportCtx.video
+    ? 'Video by @' + (u ? u.handle : '') + (reportCtx.video.caption ? ' — “' + String(reportCtx.video.caption).slice(0, 60) + '”' : '')
+    : (u ? '@' + u.handle : '');
+  apiNote('report-msg', '');
+  var showBlock = !!(u && u.id && (!S.user || u.id !== S.user.id));
+  $('report-block-row').classList.toggle('hidden', !showBlock);
+  if (showBlock) {
+    paintReportBlockBtn();
+    refreshBlockedIds(function () { paintReportBlockBtn(); });
+  }
+  show($('report-sheet'));
+  updateBottomBar();
+}
+function paintReportBlockBtn() {
+  var u = reportCtx && reportCtx.user;
+  if (!u) return;
+  var blocked = isBlockedId(u.id);
+  $('report-block-btn').textContent = blocked ? ('Unblock @' + u.handle) : ('Block @' + u.handle);
+  $('report-block-note').textContent = blocked
+    ? 'You blocked this account — their videos are hidden from your feeds and follows were removed both ways.'
+    : 'Blocking hides this account from your feeds and removes follows both ways.';
+}
+function closeReportSheet() {
+  hide($('report-sheet'));
+  updateBottomBar();
+}
+function submitReport() {
+  if (!reportCtx) return;
+  if (S.demo || !S.token) { apiNote('report-msg', 'Reports need a real account — you are browsing the demo.', true); return; }
+  var reason = 'other';
+  var radios = document.querySelectorAll('input[name="report-reason"]');
+  for (var i = 0; i < radios.length; i++) if (radios[i].checked) reason = radios[i].value;
+  var body = null;
+  if (reportCtx.video) body = { targetType: 'video', targetId: reportCtx.video.id, reason: reason };
+  else if (reportCtx.user) body = { targetType: 'user', targetId: reportCtx.user.id, reason: reason };
+  if (!body) return;
+  api('/v1/reports', { method: 'POST', body: body }).then(function () {
+    toast('Report sent — our team will take a look.');
+    closeReportSheet();
+  }).catch(function (e) { apiNote('report-msg', localizedError(e), true); });
+}
+function toggleBlockFromSheet() {
+  var u = reportCtx && reportCtx.user;
+  if (!u || !u.id) return;
+  if (S.demo || !S.token) { apiNote('report-msg', 'Blocking needs a real account — you are browsing the demo.', true); return; }
+  if (isBlockedId(u.id)) {
+    api('/v1/blocks/' + encodeURIComponent(u.id), { method: 'DELETE' }).then(function () {
+      delete blockedIds[u.id];
+      paintReportBlockBtn();
+      toast('Unblocked @' + u.handle + '.');
+    }).catch(function (e) { apiNote('report-msg', localizedError(e), true); });
+  } else {
+    api('/v1/blocks', { method: 'POST', body: { userId: u.id } }).then(function () {
+      blockedIds[u.id] = true;
+      paintReportBlockBtn();
+      toast('Blocked @' + u.handle + ' — their videos are hidden from your feeds.');
+      loadFeed();
+      loadStories();
+    }).catch(function (e) { apiNote('report-msg', localizedError(e), true); });
+  }
+}
+function loadBlocked() {
+  var list = $('blocked-list');
+  if (!list) return;
+  list.innerHTML = '';
+  if (S.demo || !S.token) {
+    list.appendChild(el('p', 'sub', 'Sign in with a real account to manage blocked accounts.'));
+    return;
+  }
+  api('/v1/blocks').then(function (r) {
+    var blocks = (r.data && r.data.blocks) || [];
+    blockedIds = {};
+    blocks.forEach(function (b) { if (b.user) blockedIds[b.user.id] = true; });
+    list.innerHTML = '';
+    if (!blocks.length) { list.appendChild(el('p', 'sub', 'You have not blocked anyone.')); return; }
+    blocks.forEach(function (b) {
+      var u = b.user;
+      if (!u) return;
+      var row = el('div', 'blocked-row');
+      var av = el('span', 'mini-avatar', initial(u.displayName));
+      av.style.background = u.avatarBg || gradientFor(u.handle);
+      row.appendChild(av);
+      var main = el('span', 'people-main');
+      main.appendChild(el('span', 'people-name', u.displayName || u.handle));
+      main.appendChild(el('span', 'people-handle', '@' + u.handle));
+      row.appendChild(main);
+      var btn = el('button', 'ghost', 'Unblock');
+      btn.type = 'button';
+      btn.addEventListener('click', function () {
+        api('/v1/blocks/' + encodeURIComponent(u.id), { method: 'DELETE' }).then(function () {
+          delete blockedIds[u.id];
+          loadBlocked();
+          toast('Unblocked @' + u.handle + '.');
+        }).catch(function (e) { apiNote('blocked-msg', localizedError(e), true); });
+      });
+      row.appendChild(btn);
+      list.appendChild(row);
+    });
+  }).catch(function () {});
+}
+
+/* ---------- watch history ---------- */
+function loadHistory() {
+  var grid = $('history-grid');
+  var empty = $('history-empty');
+  if (!grid) return;
+  grid.innerHTML = '';
+  apiNote('history-msg', '');
+  if (S.demo || !S.token) {
+    empty.textContent = 'Watch history needs a real account — you are browsing the demo.';
+    empty.classList.remove('hidden');
+    return;
+  }
+  api('/v1/me/history').then(function (r) {
+    var vids = (r.data && r.data.videos) || [];
+    empty.textContent = 'Nothing watched yet — videos you watch will show up here.';
+    empty.classList.toggle('hidden', vids.length > 0);
+    vids.forEach(function (v) { grid.appendChild(profileVideoTile(v)); });
+  }).catch(function (e) { apiNote('history-msg', localizedError(e), true); });
+}
+function clearHistory() {
+  if (S.demo || !S.token) return;
+  api('/v1/me/history', { method: 'DELETE' }).then(function () {
+    toast('Watch history cleared.');
+    loadHistory();
+  }).catch(function (e) { apiNote('history-msg', localizedError(e), true); });
+}
+
+/* ---------- account settings: email / handle / home area / 2FA --- */
+function loadAccountSettings() {
+  var emailNode = $('acct-email');
+  if (!emailNode) return;
+  if (S.user) emailNode.textContent = S.user.email || '—';
+  if (S.demo || !S.token) return;
+  api('/v1/me').then(function (r) {
+    var u = r.data && r.data.user;
+    if (!u) return;
+    S.user = u;
+    emailNode.textContent = u.email || '—';
+    var ha = $('homearea-new');
+    if (ha && document.activeElement !== ha) ha.value = u.homeArea || '';
+    var tg = $('tfa-toggle');
+    if (tg) tg.checked = !!u.twoFactorEnabled;
+    var hn = $('chhandle-new');
+    if (hn && document.activeElement !== hn) hn.value = u.handle || '';
+    var note = $('chhandle-note');
+    if (note) {
+      note.textContent = (u.nextHandleChangeAt && u.nextHandleChangeAt > Date.now())
+        ? 'You changed your username recently — the next change unlocks ' + new Date(u.nextHandleChangeAt).toLocaleDateString() + '.'
+        : 'Usernames can be changed once every 30 days.';
+    }
+  }).catch(function () {});
+}
+function submitChangeEmailRequest() {
+  var newEmail = $('chemail-new').value.trim();
+  var pw = $('chemail-pw').value;
+  apiNote('chemail-msg', '');
+  if (S.demo || !S.token) { apiNote('chemail-msg', 'Changing email needs a real account.', true); return; }
+  if (!newEmail || !pw) { apiNote('chemail-msg', 'Enter the new email and your current password.', true); return; }
+  api('/v1/me/change-email/request', { method: 'POST', body: { newEmail: newEmail, currentPassword: pw } })
+    .then(function () { apiNote('chemail-msg', 'Code sent — check the NEW inbox and enter the code below.'); })
+    .catch(function (e) { apiNote('chemail-msg', localizedError(e), true); });
+}
+function submitChangeEmailConfirm() {
+  var code = $('chemail-code').value.trim();
+  apiNote('chemail-msg', '');
+  if (!code) { apiNote('chemail-msg', 'Enter the 6-digit code from the new inbox.', true); return; }
+  api('/v1/me/change-email/confirm', { method: 'POST', body: { code: code } }).then(function (r) {
+    if (r.data && r.data.user) {
+      S.user = r.data.user;
+      $('acct-email').textContent = r.data.user.email || '—';
+    }
+    $('chemail-new').value = '';
+    $('chemail-pw').value = '';
+    $('chemail-code').value = '';
+    apiNote('chemail-msg', 'Email changed.');
+    toast('Your account email was changed.');
+  }).catch(function (e) { apiNote('chemail-msg', localizedError(e), true); });
+}
+function submitChangeHandle() {
+  var handle = $('chhandle-new').value.trim().replace(/^@/, '');
+  apiNote('chhandle-msg', '');
+  if (S.demo || !S.token) { apiNote('chhandle-msg', 'Changing your username needs a real account.', true); return; }
+  if (!handle) { apiNote('chhandle-msg', 'Type the new username first.', true); return; }
+  if (S.user && handle === S.user.handle) { apiNote('chhandle-msg', 'That is already your username.', true); return; }
+  api('/v1/me', { method: 'PATCH', body: { handle: handle } }).then(function (r) {
+    if (r.data && r.data.user) S.user = r.data.user;
+    apiNote('chhandle-msg', 'Username changed to @' + handle + '.');
+    toast('Username changed to @' + handle + '.');
+    refreshProfile();
+    loadAccountSettings();
+  }).catch(function (e) { apiNote('chhandle-msg', localizedError(e), true); });
+}
+function submitHomeArea() {
+  var area = $('homearea-new').value.trim();
+  var msg = $('homearea-msg');
+  if (!area) { msg.textContent = 'Type your home area first.'; msg.classList.add('error'); return; }
+  saveHomeArea(area, msg, null);
+}
+function onTfaToggle() {
+  var on = $('tfa-toggle').checked;
+  var pw = $('tfa-pw').value;
+  apiNote('tfa-settings-msg', '');
+  if (S.demo || !S.token) {
+    apiNote('tfa-settings-msg', 'Two-factor needs a real account.', true);
+    $('tfa-toggle').checked = false;
+    return;
+  }
+  if (!pw) {
+    apiNote('tfa-settings-msg', 'Enter your current password to change two-factor.', true);
+    $('tfa-toggle').checked = !on;
+    return;
+  }
+  api('/v1/me/2fa', { method: 'POST', body: { enabled: on, currentPassword: pw } }).then(function () {
+    $('tfa-pw').value = '';
+    if (S.user) S.user.twoFactorEnabled = on;
+    apiNote('tfa-settings-msg', on ? 'Two-factor is ON — sign-ins will ask for an emailed code.' : 'Two-factor is off.');
+    toast(on ? 'Two-factor authentication on.' : 'Two-factor authentication off.');
+  }).catch(function (e) {
+    $('tfa-toggle').checked = !on;
+    apiNote('tfa-settings-msg', localizedError(e), true);
+  });
+}
+
+/* ---------- login two-factor ---------- */
+var pendingTfaEmail = '';
+function showTfaPanel(email) {
+  pendingTfaEmail = email || '';
+  var rp = $('reset-panel');
+  if (rp) hide(rp);
+  show($('tfa-panel'));
+  apiNote('tfa-msg', '');
+  var c = $('tfa-code');
+  if (c) { c.value = ''; c.focus(); }
+}
+function submitTfa() {
+  var code = $('tfa-code').value.trim();
+  apiNote('tfa-msg', '');
+  if (!code) { apiNote('tfa-msg', 'Enter the 6-digit code from your email.', true); return; }
+  var btn = $('tfa-submit');
+  btn.disabled = true;
+  api('/v1/login/verify', { method: 'POST', body: { email: pendingTfaEmail, code: code } }).then(function (r) {
+    btn.disabled = false;
+    hide($('tfa-panel'));
+    saveToken(r.data.token);
+    S.user = r.data.user;
+    S.demo = false;
+    enterApp(!(r.data.user.interests && r.data.user.interests.length) && !onboardDone());
+  }).catch(function (e) {
+    btn.disabled = false;
+    apiNote('tfa-msg', localizedError(e), true);
+  });
+}
+
 function wire() {
   wireTabs();
   wireBottomBar();
@@ -5393,6 +6022,34 @@ function wire() {
   $('profile-videos-stat').addEventListener('click', function () { setProfileTab('videos'); });
   $('profile-tab-videos').addEventListener('click', function () { setProfileTab('videos'); });
   $('profile-tab-shop').addEventListener('click', function () { setProfileTab('shop'); });
+  /* fix pass 2 wiring: nearby tab, history tab, creator More menu,
+   * report/block sheet, story viewer + post picker, AI helper,
+   * account-security settings, login 2FA */
+  $('ftab-nearby').addEventListener('click', function () { setFeedTab('nearby'); });
+  $('profile-tab-history').addEventListener('click', function () { setProfileTab('history'); });
+  $('history-clear-btn').addEventListener('click', clearHistory);
+  $('creator-menu-btn').addEventListener('click', function () {
+    if (S.creatorProfile && S.creatorProfile.user) openReportSheet({ user: S.creatorProfile.user });
+  });
+  $('report-close').addEventListener('click', closeReportSheet);
+  $('report-submit').addEventListener('click', submitReport);
+  $('report-block-btn').addEventListener('click', toggleBlockFromSheet);
+  $('story-close').addEventListener('click', closeStoryViewer);
+  $('story-prev').addEventListener('click', function () { stepStory(-1); });
+  $('story-next').addEventListener('click', function () { stepStory(1); });
+  $('story-like').addEventListener('click', likeCurrentStory);
+  $('story-delete').addEventListener('click', deleteCurrentStory);
+  $('story-post-close').addEventListener('click', function () { hide($('story-post-sheet')); updateBottomBar(); });
+  $('helper-send').addEventListener('click', sendHelper);
+  $('helper-input').addEventListener('keydown', function (e) { if (e.key === 'Enter') sendHelper(); });
+  $('helper-buy-pack').addEventListener('click', buyHelperPack);
+  $('chemail-send').addEventListener('click', submitChangeEmailRequest);
+  $('chemail-confirm').addEventListener('click', submitChangeEmailConfirm);
+  $('chhandle-btn').addEventListener('click', submitChangeHandle);
+  $('homearea-btn').addEventListener('click', submitHomeArea);
+  $('tfa-toggle').addEventListener('change', onTfaToggle);
+  $('tfa-submit').addEventListener('click', submitTfa);
+  $('tfa-back').addEventListener('click', function () { hide($('tfa-panel')); });
   $('edit-profile-btn').addEventListener('click', openEditProfile);
   $('profile-share-btn').addEventListener('click', function () { shareProfile(S.user); });
   $('edit-profile-close').addEventListener('click', closeEditProfile);

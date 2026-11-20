@@ -102,6 +102,14 @@ if (location.pathname === '/app') { location.replace('/app/' + location.search +
           <button id="reset-back" class="ghost big" type="button">Back to log in</button>
           <p id="reset-msg" class="form-msg" role="alert"></p>
         </div>
+        <div id="tfa-panel" class="hidden">
+          <p class="sub">Two-factor is on for this account. We emailed you a 6-digit sign-in code.</p>
+          <label class="fld"><span>Sign-in code</span>
+            <input id="tfa-code" type="text" inputmode="numeric" maxlength="10" autocomplete="one-time-code" placeholder="6-digit code from your email"></label>
+          <button id="tfa-submit" class="primary big" type="button">Verify and sign in</button>
+          <button id="tfa-back" class="ghost big" type="button">Back to log in</button>
+          <p id="tfa-msg" class="form-msg" role="alert"></p>
+        </div>
         <button id="bio-unlock-btn" class="ghost big hidden" data-i18n="bioUnlock">Unlock with fingerprint</button>
         <p id="auth-msg" class="form-msg" role="alert"></p>
 
@@ -145,6 +153,7 @@ if (location.pathname === '/app') { location.replace('/app/' + location.search +
         <div class="feed-tabs">
           <button id="ftab-following" class="ftab" data-i18n="following">Following</button>
           <button id="ftab-foryou" class="ftab on" data-i18n="forYou">For You</button>
+          <button id="ftab-nearby" class="ftab">Nearby</button>
         </div>
         <button id="search-btn" class="glass-btn search-btn" aria-label="Search" data-i18n-aria="ariaSearch">⌕</button>
       </header>
@@ -158,6 +167,7 @@ if (location.pathname === '/app') { location.replace('/app/' + location.search +
         <button class="menu-item" data-tab="games"><span class="mi-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.8 7.5h10.4a5.3 5.3 0 0 1 5.2 5.6c0 2.9-2.3 5.2-5.1 5.2-1.7 0-3.2-.8-4.1-2.1H10.8c-.9 1.3-2.4 2.1-4.1 2.1-2.8 0-5.1-2.3-5.1-5.2a5.3 5.3 0 0 1 5.2-5.6z"/><path d="M7.2 10.8v4M5.2 12.8h4"/><circle cx="16.4" cy="11.2" r=".4" fill="currentColor"/><circle cx="18.6" cy="14" r=".4" fill="currentColor"/></svg></span><span data-i18n="tabArena">Arena</span></button>
         <button class="menu-item" data-tab="inbox"><span class="mi-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.8a8 8 0 0 1-8.4 7.7c-1.2 0-2.4-.2-3.4-.7L3.5 20.5l1.7-5.2a8 8 0 1 1 15.3-3.5z"/></svg></span><span data-i18n="tabChat">Chat</span><span id="menu-chat-badge" class="mi-badge hidden">3</span></button>
         <button class="menu-item" data-tab="notifications"><span class="mi-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.8 9.2a5.8 5.8 0 1 0-11.6 0c0 5-2.3 6.6-2.3 6.6h16.2s-2.3-1.6-2.3-6.6"/><path d="M10.2 19.5a2 2 0 0 0 3.6 0"/></svg></span><span data-i18n="notifications">Notifications</span><span id="menu-notif-badge" class="mi-badge hidden">0</span></button>
+        <button class="menu-item" data-tab="helper"><span class="mi-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5 13.9 10 20.5 12 13.9 14 12 20.5 10.1 14 3.5 12 10.1 10z"/></svg></span><span>AI Helper</span></button>
         <button class="menu-item" data-tab="profile"><span class="mi-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.2" r="3.7"/><path d="M5 20.2a7.2 7.2 0 0 1 14 0"/></svg></span><span data-i18n="profile">Profile</span></button>
         <button class="menu-item" data-tab="settings"><span class="mi-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6.5h9M19 6.5h1.5M4 12h3.5M13.5 12H20M4 17.5h11.5M19.5 17.5H20"/><circle cx="16" cy="6.5" r="2.2"/><circle cx="10.5" cy="12" r="2.2"/><circle cx="17" cy="17.5" r="2.2"/></svg></span><span data-i18n="settingsTitle">Settings</span></button>
         <div class="menu-credits"><span data-i18n="credits">Credits</span><span id="credits-pill" class="credits-pill" title="Credits" data-i18n-title="credits">✦ 0</span></div>
@@ -167,6 +177,8 @@ if (location.pathname === '/app') { location.replace('/app/' + location.search +
            while you browse; tapping loads them without ever yanking
            the feed mid-video -->
       <button id="new-posts-pill" class="new-posts-pill hidden" type="button"></button>
+
+      <div id="stories-rail" class="stories-rail hidden"></div>
 
       <div id="feed" class="feed"></div>
 
@@ -261,12 +273,12 @@ if (location.pathname === '/app') { location.replace('/app/' + location.search +
           <div id="creator-name" class="profile-name">—</div>
           <div class="ig-handle-row"><span id="creator-handle" class="profile-handle">@—</span><span id="creator-private-chip" class="private-chip hidden"><svg class="ic ic-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10.8" width="14" height="9.2" rx="2"/><path d="M8 10.8V8a4 4 0 0 1 8 0v2.8"/><circle cx="12" cy="15.4" r="1.3" fill="currentColor" stroke="none"/></svg> <span data-i18n="privacyPrivate">Private</span></span></div>
           <p id="creator-bio" class="profile-bio"></p>
-          <p id="creator-level-line" class="ig-level-line"></p>
         </div>
         <div class="ig-actions">
           <button id="creator-follow-btn" class="primary creator-follow hidden">Follow</button>
           <button id="creator-message-btn" class="ghost ig-action" data-i18n="messageVerb">Message</button>
           <button id="creator-share-btn" class="ghost ig-action" data-i18n="share">Share</button>
+          <button id="creator-menu-btn" class="ghost ig-action" type="button">⋯ More</button>
         </div>
         <div id="creator-locked" class="locked-box hidden">
           <div class="locked-ic"><svg class="ic ic-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10.8" width="14" height="9.2" rx="2"/><path d="M8 10.8V8a4 4 0 0 1 8 0v2.8"/><circle cx="12" cy="15.4" r="1.3" fill="currentColor" stroke="none"/></svg></div>
@@ -294,7 +306,6 @@ if (location.pathname === '/app') { location.replace('/app/' + location.search +
           <div id="profile-name" class="profile-name">—</div>
           <div id="profile-handle" class="profile-handle">@—</div>
           <p id="profile-bio" class="profile-bio"></p>
-          <p id="profile-level-line" class="ig-level-line"></p>
           <div id="profile-badges" class="badge-row ig-badges"></div>
         </div>
         <div class="ig-actions">
@@ -306,6 +317,7 @@ if (location.pathname === '/app') { location.replace('/app/' + location.search +
       <div class="profile-tabs" role="tablist" aria-label="Profile sections">
         <button id="profile-tab-videos" class="profile-tab active" type="button">▦ <span data-i18n="videosWord">Videos</span></button>
         <button id="profile-tab-shop" class="profile-tab" type="button">✦ <span data-i18n="shopCredits">Shop / Credits</span></button>
+        <button id="profile-tab-history" class="profile-tab" type="button">◷ <span>History</span></button>
       </div>
 
       <div id="profile-videos-pane" class="profile-pane">
@@ -327,6 +339,13 @@ if (location.pathname === '/app') { location.replace('/app/' + location.search +
           <p id="packs-msg" class="form-msg"></p>
           <div id="ledger-list" class="ledger-list"></div>
         </div>
+      </div>
+
+      <div id="profile-history-pane" class="profile-pane hidden">
+        <div id="history-grid" class="profile-grid"></div>
+        <p id="history-empty" class="sub profile-empty hidden">Nothing watched yet — videos you watch will show up here.</p>
+        <button id="history-clear-btn" class="ghost danger" type="button">Clear watch history</button>
+        <p id="history-msg" class="form-msg"></p>
       </div>
 
       <button id="settings-btn" class="ghost"><svg class="ic ic-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6.5h9M19 6.5h1.5M4 12h3.5M13.5 12H20M4 17.5h11.5M19.5 17.5H20"/><circle cx="16" cy="6.5" r="2.2"/><circle cx="10.5" cy="12" r="2.2"/><circle cx="17" cy="17.5" r="2.2"/></svg><span data-i18n="settings">Settings</span></button>
@@ -381,6 +400,28 @@ if (location.pathname === '/app') { location.replace('/app/' + location.search +
         <div id="notif-prefs"></div>
         <p class="sub" data-i18n="notifPrefsNote">Choose what lands in your inbox. Turned-off types are never created.</p>
       </div>
+      <div class="settings-group" id="account-settings-group">
+        <h3 class="section-title">Account</h3>
+        <p class="sub">Signed in as <b id="acct-email">—</b></p>
+        <label class="fld"><span>New email</span>
+          <input id="chemail-new" type="email" autocomplete="email" placeholder="you@example.com"></label>
+        <label class="fld"><span>Current password (to change email)</span>
+          <input id="chemail-pw" type="password" autocomplete="current-password"></label>
+        <button id="chemail-send" class="ghost" type="button">Email me a change code</button>
+        <label class="fld"><span>Change code from the new inbox</span>
+          <input id="chemail-code" type="text" inputmode="numeric" maxlength="10" autocomplete="one-time-code" placeholder="6-digit code"></label>
+        <button id="chemail-confirm" class="ghost" type="button">Confirm new email</button>
+        <p id="chemail-msg" class="form-msg"></p>
+        <label class="fld"><span>Username (@handle)</span>
+          <input id="chhandle-new" type="text" maxlength="24" autocomplete="off" placeholder="yourname"></label>
+        <button id="chhandle-btn" class="ghost" type="button">Change username</button>
+        <p id="chhandle-note" class="sub"></p>
+        <p id="chhandle-msg" class="form-msg"></p>
+        <label class="fld"><span>Home area (for Nearby)</span>
+          <input id="homearea-new" type="text" maxlength="60" autocomplete="off" placeholder="e.g. Vernon"></label>
+        <button id="homearea-btn" class="ghost" type="button">Save home area</button>
+        <p id="homearea-msg" class="form-msg"></p>
+      </div>
       <div class="settings-group" id="password-settings-group">
         <h3 class="section-title">Password &amp; security</h3>
         <label class="fld"><span>Current password</span>
@@ -390,6 +431,18 @@ if (location.pathname === '/app') { location.replace('/app/' + location.search +
         <button id="chpw-btn" class="ghost" type="button">Change password</button>
         <p id="chpw-msg" class="form-msg"></p>
         <p class="sub">Locked out instead? Use “Forgot password?” on the sign-in screen — we email you a reset code.</p>
+        <label class="switch-row">
+          <span>Two-factor authentication (email code at sign-in)</span>
+          <input id="tfa-toggle" type="checkbox">
+        </label>
+        <label class="fld"><span>Current password (to change 2FA)</span>
+          <input id="tfa-pw" type="password" autocomplete="current-password"></label>
+        <p id="tfa-settings-msg" class="form-msg"></p>
+      </div>
+      <div class="settings-group" id="blocked-settings-group">
+        <h3 class="section-title">Blocked accounts</h3>
+        <div id="blocked-list" class="blocked-list"></div>
+        <p id="blocked-msg" class="form-msg"></p>
       </div>
       <div class="settings-group">
         <h3 class="section-title" data-i18n="about">About</h3>
@@ -402,6 +455,23 @@ if (location.pathname === '/app') { location.replace('/app/' + location.search +
         <p class="sub" data-i18n="deleteAccountNote">Permanently delete your account and everything in it. This cannot be undone.</p>
         <button id="delete-account-btn" class="ghost danger" data-i18n="deleteAccount">Delete account</button>
       </div>
+    </div>
+
+    <!-- AI HELPER -->
+    <div id="panel-helper" class="panel hidden">
+      <header class="page-head chat-head">
+        <button class="back-home glass-btn" aria-label="Back">‹</button>
+        <h2>AI Helper</h2>
+      </header>
+      <p class="sub helper-note">Ask about making videos, growing an audience, or how LOOPI works. The Helper is an AI assistant.</p>
+      <div id="helper-messages" class="chat-messages helper-messages"></div>
+      <p id="helper-usage" class="sub"></p>
+      <button id="helper-buy-pack" class="ghost hidden" type="button">Buy a message pack (+50 · 20 credits)</button>
+      <div class="chat-input-row">
+        <input id="helper-input" type="text" maxlength="2000" placeholder="Ask the Helper…">
+        <button id="helper-send" class="send-btn">Send</button>
+      </div>
+      <p id="helper-msg" class="form-msg"></p>
     </div>
 
     <!-- CHAT (full view, from Inbox) -->
@@ -838,6 +908,58 @@ if (location.pathname === '/app') { location.replace('/app/' + location.search +
         <button id="comment-send" class="send-btn" data-i18n="send">Send</button>
       </div>
       <p id="comment-msg" class="form-msg"></p>
+    </div>
+
+    <!-- STORY VIEWER -->
+    <div id="story-viewer" class="comments-sheet story-viewer hidden">
+      <div class="create-head">
+        <h2 id="story-viewer-title">Story</h2>
+        <button id="story-close" class="icon-btn" aria-label="Close">✕</button>
+      </div>
+      <div id="story-segments" class="story-segments"></div>
+      <div id="story-stage" class="story-stage"></div>
+      <p id="story-caption" class="story-caption"></p>
+      <div class="story-actions">
+        <button id="story-prev" class="ghost" type="button">‹ Prev</button>
+        <button id="story-like" class="ghost" type="button">♥ Like</button>
+        <button id="story-delete" class="ghost danger hidden" type="button">Delete</button>
+        <button id="story-next" class="ghost" type="button">Next ›</button>
+      </div>
+      <p id="story-msg" class="form-msg"></p>
+    </div>
+
+    <!-- STORY POST PICKER -->
+    <div id="story-post-sheet" class="comments-sheet hidden">
+      <div class="create-head">
+        <h2>Post a story</h2>
+        <button id="story-post-close" class="icon-btn" aria-label="Close">✕</button>
+      </div>
+      <p class="sub">Pick one of your videos — it stays up for 24 hours.</p>
+      <div id="story-post-list" class="people-list"></div>
+      <p id="story-post-msg" class="form-msg"></p>
+    </div>
+
+    <!-- REPORT / BLOCK -->
+    <div id="report-sheet" class="comments-sheet hidden">
+      <div class="create-head">
+        <h2 id="report-title">Report</h2>
+        <button id="report-close" class="icon-btn" aria-label="Close">✕</button>
+      </div>
+      <p id="report-target" class="sub"></p>
+      <div id="report-reasons">
+        <label class="radio-row"><input type="radio" name="report-reason" value="spam" checked><span>Spam</span></label>
+        <label class="radio-row"><input type="radio" name="report-reason" value="harassment"><span>Harassment</span></label>
+        <label class="radio-row"><input type="radio" name="report-reason" value="inappropriate"><span>Inappropriate content</span></label>
+        <label class="radio-row"><input type="radio" name="report-reason" value="other"><span>Other</span></label>
+      </div>
+      <div class="gs-actions">
+        <button id="report-submit" class="primary" type="button">Send report</button>
+      </div>
+      <p id="report-msg" class="form-msg"></p>
+      <div id="report-block-row" class="hidden">
+        <p class="sub" id="report-block-note"></p>
+        <button id="report-block-btn" class="ghost danger" type="button">Block</button>
+      </div>
     </div>
 
     <!-- DELETE ACCOUNT (confirm sheet: password re-entry) -->
