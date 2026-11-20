@@ -8,9 +8,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="games.css">
-<link rel="stylesheet" href="volfield.css">
+<script>/* Bug fix (2026-11-19 QA #1): /app without the trailing slash used to
+ * serve this page with every relative asset resolved against the site
+ * root — no CSS, dead JS, a splash that never left. Bounce to /app/
+ * before anything renders, and use absolute asset paths below so the
+ * page works from either URL. */
+if (location.pathname === '/app') { location.replace('/app/' + location.search + location.hash); }</script>
+<link rel="stylesheet" href="/app/style.css">
+<link rel="stylesheet" href="/app/games.css">
+<link rel="stylesheet" href="/app/volfield.css">
 </head>
 <body>
 <div id="phone">
@@ -70,6 +76,12 @@
             <input id="auth-name" type="text" maxlength="60" autocomplete="name"></label>
           <label class="fld"><span data-i18n="handle">Handle</span>
             <input id="auth-handle" type="text" maxlength="24" autocomplete="username" placeholder="yourname"></label>
+          <label class="fld"><span>Who brought you? (optional)</span>
+            <input id="auth-referrer" type="text" maxlength="24" autocomplete="off" placeholder="their @handle"></label>
+          <label class="check-row">
+            <input id="auth-age" type="checkbox">
+            <span>I confirm I am 18 or older and I agree to the Terms &amp; Privacy Policy. LOOPI is an 18+ app.</span>
+          </label>
         </div>
 
         <label class="fld"><span data-i18n="email">Email</span>
@@ -78,6 +90,18 @@
           <input id="auth-password" type="password" autocomplete="current-password"></label>
 
         <button id="auth-submit" class="primary big" data-i18n="login">Log in</button>
+        <button id="auth-forgot-link" class="ghost big" type="button">Forgot password?</button>
+
+        <div id="reset-panel" class="hidden">
+          <label class="fld"><span>Reset code</span>
+            <input id="reset-code" type="text" inputmode="numeric" maxlength="10" autocomplete="one-time-code" placeholder="6-digit code from your email"></label>
+          <label class="fld"><span>New password</span>
+            <input id="reset-newpw" type="password" autocomplete="new-password"></label>
+          <button id="reset-send" class="ghost big" type="button">Email me a reset code</button>
+          <button id="reset-submit" class="primary big" type="button">Set new password</button>
+          <button id="reset-back" class="ghost big" type="button">Back to log in</button>
+          <p id="reset-msg" class="form-msg" role="alert"></p>
+        </div>
         <button id="bio-unlock-btn" class="ghost big hidden" data-i18n="bioUnlock">Unlock with fingerprint</button>
         <p id="auth-msg" class="form-msg" role="alert"></p>
 
@@ -357,10 +381,21 @@
         <div id="notif-prefs"></div>
         <p class="sub" data-i18n="notifPrefsNote">Choose what lands in your inbox. Turned-off types are never created.</p>
       </div>
+      <div class="settings-group" id="password-settings-group">
+        <h3 class="section-title">Password &amp; security</h3>
+        <label class="fld"><span>Current password</span>
+          <input id="chpw-current" type="password" autocomplete="current-password"></label>
+        <label class="fld"><span>New password (8+ characters)</span>
+          <input id="chpw-new" type="password" autocomplete="new-password"></label>
+        <button id="chpw-btn" class="ghost" type="button">Change password</button>
+        <p id="chpw-msg" class="form-msg"></p>
+        <p class="sub">Locked out instead? Use “Forgot password?” on the sign-in screen — we email you a reset code.</p>
+      </div>
       <div class="settings-group">
         <h3 class="section-title" data-i18n="about">About</h3>
         <p class="sub">LOOPI · <span data-i18n="aboutText">Upload-first short video. AI generation is one option inside — never the whole app.</span></p>
         <p class="sub" id="settings-mode"></p>
+        <p class="sub">Web app version 1.1.0</p>
       </div>
       <div class="settings-group danger-zone">
         <h3 class="section-title" data-i18n="dangerZone">Danger zone</h3>
@@ -404,6 +439,7 @@
         <button id="live-back" class="icon-btn" aria-label="Back" data-i18n-aria="ariaBack">‹</button>
         <h2 id="lr-title">Live</h2>
         <span class="live-badge" data-i18n="liveBadge">● LIVE</span>
+        <button id="lr-end-btn" class="ghost danger hidden" type="button">End stream</button>
       </header>
       <div class="lr-stage">
         <video id="lr-video" class="lr-video hidden" autoplay playsinline></video>
@@ -824,11 +860,11 @@
 
   <div id="toast" class="toast hidden"></div>
 </div>
-<script src="posters.js"></script>
-<script src="icons.js"></script>
-<script src="live-video.js"></script>
-<script src="clips.js"></script>
-<script src="app.js"></script>
+<script src="/app/posters.js"></script>
+<script src="/app/icons.js"></script>
+<script src="/app/live-video.js"></script>
+<script src="/app/clips.js"></script>
+<script src="/app/app.js"></script>
 <script src="games-online.js"></script>
 <script src="foodninja.js"></script>
 <script src="group-games.js"></script>

@@ -46,9 +46,9 @@ var CREATOR_LEVELS = [
   { level: 5, name: 'Star Creator', minXp: 1000, reachBoost: 2.0 }
 ];
 var CREDIT_PACKS = [
-  { id: 'pack_10', credits: 10, priceUsd: 20 },
-  { id: 'pack_25', credits: 25, priceUsd: 50 },
-  { id: 'pack_60', credits: 60, priceUsd: 120 }
+  { id: 'pack_1000', credits: 1000, priceUsd: 20 },
+  { id: 'pack_2500', credits: 2500, priceUsd: 50 },
+  { id: 'pack_6000', credits: 6000, priceUsd: 120 }
 ];
 /* Mirrors of src/config.js creator rules — used ONLY as the offline /
  * demo fallback. When signed in, GET /v1/creator-levels replaces all
@@ -116,7 +116,7 @@ var STRINGS = {
     profileUpdated: 'Profile updated.', peopleEmpty: 'No one to show yet.',
     noVideosYet: 'No videos yet.', saveChanges: 'Save changes', searchWord: 'Search',
     bioTitle: 'Biometric unlock', bioUnlock: 'Unlock with fingerprint',
-    bioNote: 'Your session is sealed with Android Keystore on this phone. If biometric unlock fails, use your password.',
+    bioNote: 'Your session stays sealed on this device. If biometric unlock fails, use your password.',
     bioEnabled: 'Biometric unlock is on for this phone.',
     bioDisabled: 'Biometric unlock is off.',
     bioFailed: 'Biometric unlock did not complete.',
@@ -1751,7 +1751,10 @@ function setFeedTab(tab) {
   S.feedTab = tab;
   $('ftab-following').classList.toggle('on', tab === 'following');
   $('ftab-foryou').classList.toggle('on', tab === 'foryou');
-  renderFeed();
+  /* Bug fix (QA #4): the Following tab used to just re-render the same
+   * For You items (its only filter was a hardcoded demo handle list).
+   * Real accounts now fetch the server-filtered following feed. */
+  if (!S.demo && S.token) loadFeed(); else renderFeed();
 }
 function updateSettingsMode() {
   var n = $('settings-mode');
@@ -1814,6 +1817,9 @@ function renderNotifications() {
   var list = $('notif-list');
   if (!list) return;
   list.innerHTML = '';
+  /* "Mark all read" on an empty inbox is a dead control (QA #18). */
+  var readAllBtn = $('notif-read-all');
+  if (readAllBtn) readAllBtn.classList.toggle('hidden', !S.notifs.length);
   if (!S.notifs.length) {
     list.appendChild(el('p', 'sub', t('notifEmpty')));
     return;
@@ -1902,7 +1908,8 @@ function profileVideoTile(v) {
   if (v.status === 'pending') sq.appendChild(el('span', 'sq-ai kind-badge', '⏳ ' + t('modChecking')));
   if (v.status === 'rejected') sq.appendChild(el('span', 'sq-ai kind-badge', t('modRejected')));
   var meta = el('div', 'sq-meta');
-  meta.appendChild(el('span', null, '▶ ' + fmtCount((v.likeCount || 0) * 7)));
+  /* Real view count only (was likeCount * 7 — a fabricated number). */
+  if (typeof v.viewCount === 'number') meta.appendChild(el('span', null, '▶ ' + fmtCount(v.viewCount)));
   sq.appendChild(meta);
   sq.addEventListener('click', function () { jumpToVideo(v); });
   return sq;
@@ -2194,7 +2201,57 @@ function setAuthMode(mode) {
   $('auth-tab-login').classList.toggle('active', mode === 'login');
   $('auth-tab-register').classList.toggle('active', mode === 'register');
   if (mode === 'register') show($('register-fields')); else hide($('register-fields'));
+  /* Forgot password belongs to the login side only. */
+  var fk = $('auth-forgot-link'); if (fk) fk.classList.toggle('hidden', mode !== 'login');
+  if (mode !== 'login') { var rp = $('reset-panel'); if (rp) hide(rp); }
   $('auth-submit').textContent = t(mode === 'login' ? 'login' : 'signup');
+}
+/* ---------------- password reset (QA #5) ----------------
+ * The server flow existed (POST /v1/password/forgot + /reset, the
+ * same one the native app uses) but the web app never wired it up —
+ * a locked-out web user had no recovery at all. */
+function resetMsg(text, isError) {
+  var m = $('reset-msg');
+  if (!m) return;
+  m.textContent = text || '';
+  m.className = 'form-msg' + (isError ? ' error' : '');
+}
+function sendResetCode() {
+  var email = $('auth-email').value.trim();
+  if (!email) { resetMsg('Enter your account email above first.', true); return; }
+  resetMsg('Sending…');
+  api('/v1/password/forgot', { method: 'POST', body: { email: email } }).then(function () {
+    resetMsg('If that email has a LOOPI account, a reset code is on its way. Enter it below with your new password.');
+  }).catch(function (e) { resetMsg(localizedError(e), true); });
+}
+function submitReset() {
+  var email = $('auth-email').value.trim();
+  var code = $('reset-code').value.trim();
+  var newPassword = $('reset-newpw').value;
+  if (!email || !code || !newPassword) { resetMsg('Email, reset code and a new password are all required.', true); return; }
+  resetMsg('Updating…');
+  api('/v1/password/reset', { method: 'POST', body: { email: email, code: code, newPassword: newPassword } }).then(function () {
+    hide($('reset-panel'));
+    $('reset-code').value = ''; $('reset-newpw').value = '';
+    authMsg('Password updated — log in with your new password.');
+  }).catch(function (e) { resetMsg(localizedError(e), true); });
+}
+/* Change password while signed in (Settings → Password & security),
+ * POST /v1/me/change-password — the endpoint existed; the web
+ * Settings screen never offered it. */
+function submitChangePassword() {
+  var msg = $('chpw-msg');
+  var setMsg = function (text, isError) { if (msg) { msg.textContent = text || ''; msg.className = 'form-msg' + (isError ? ' error' : ''); } };
+  if (S.demo || !S.token) { setMsg('Changing your password needs a real account — you are browsing the demo.', true); return; }
+  var cur = $('chpw-current').value;
+  var next = $('chpw-new').value;
+  if (!cur || !next) { setMsg('Enter your current password and a new password.', true); return; }
+  if (next.length < 8) { setMsg('New password must be at least 8 characters.', true); return; }
+  setMsg('Updating…');
+  api('/v1/me/change-password', { method: 'POST', body: { currentPassword: cur, newPassword: next } }).then(function () {
+    $('chpw-current').value = ''; $('chpw-new').value = '';
+    setMsg('Password changed. Other signed-in devices were signed out.');
+  }).catch(function (e) { setMsg(localizedError(e), true); });
 }
 function authMsg(text, isError) {
   var m = $('auth-msg');
@@ -2232,10 +2289,22 @@ function submitAuth() {
   btn.disabled = true;
   authMsg('');
   if (authMode === 'register') {
+    /* Bug fix (QA #16): sign-up had no age gate at all while every
+     * page rates LOOPI 18+. The confirmation is required to register. */
+    var ageBox = $('auth-age');
+    if (ageBox && !ageBox.checked) {
+      authMsg('Please confirm you are 18 or older — LOOPI is an 18+ app.', true);
+      btn.disabled = false;
+      return;
+    }
     var body = {
       email: email, password: password,
       displayName: $('auth-name').value.trim() || undefined,
       handle: $('auth-handle').value.trim() || undefined,
+      /* Bug fix (QA #14): the creators page promises new users can
+       * name who brought them; the server stores it as referredById. */
+      referredBy: $('auth-referrer') ? ($('auth-referrer').value.trim().replace(/^@/, '') || undefined) : undefined,
+      ageConfirmed: true,
       interests: S.pickedInterests
     };
     api('/v1/register', { method: 'POST', body: body }).then(function (r) {
@@ -2253,7 +2322,10 @@ function submitAuth() {
       btn.disabled = false;
       saveToken(r.data.token);
       S.user = r.data.user; S.demo = false;
-      enterApp(!(r.data.user.interests && r.data.user.interests.length));
+      /* Bug fix (QA #7): onboarding re-appeared on EVERY sign-in for
+       * anyone who skipped it (their interests stay empty forever).
+       * Remember completion/skip per account on this device. */
+      enterApp(!(r.data.user.interests && r.data.user.interests.length) && !onboardDone());
     }).catch(function (e) {
       btn.disabled = false;
       if (e.status === 0) authMsg(t('serverUnreachableAuth'), true);
@@ -2278,6 +2350,13 @@ function logout() {
      * localStorage token and any Keystore-sealed biometric copy. */
     var b = bioBridge();
     if (b && b.disable) { try { b.disable(); } catch (e) { /* ignore */ } }
+    /* Bug fix (QA #8): the auth form kept the previous account's
+     * email and masked password after sign-out. Clear every field. */
+    ['auth-email', 'auth-password', 'auth-name', 'auth-handle', 'auth-referrer'].forEach(function (id) {
+      var n = $(id); if (n) n.value = '';
+    });
+    var ageBox = $('auth-age'); if (ageBox) ageBox.checked = false;
+    authMsg('');
     saveToken(null); S.user = null; S.demo = false;
     rtStop();
     S.myProfile = null;
@@ -2346,8 +2425,15 @@ function renderInterestChips() {
     wrap.appendChild(chip);
   });
 }
+function onboardDone() {
+  try { return localStorage.getItem('loopi_onboard_done_' + (S.user ? S.user.id : 'anon')) === '1'; }
+  catch (e) { return false; }
+}
+function markOnboardDone() {
+  try { localStorage.setItem('loopi_onboard_done_' + (S.user ? S.user.id : 'anon'), '1'); } catch (e) { /* ignore */ }
+}
 function finishOnboarding() {
-  var done = function () { showScreen('screen-main'); showPanel('home'); loadFeed(); };
+  var done = function () { markOnboardDone(); showScreen('screen-main'); showPanel('home'); loadFeed(); };
   if (!S.demo && S.token) {
     api('/v1/me', { method: 'PATCH', body: { interests: S.pickedInterests } })
       .then(function (r) { S.user = r.data.user; done(); })
@@ -2527,14 +2613,26 @@ function loadFeed() {
     noteDemoOnce();
     return;
   }
-  api('/v1/feed').then(function (r) {
-    S.feed = r.data.videos || [];
-    if (!S.feed.length) {
+  var following = S.feedTab === 'following';
+  api(following ? '/v1/feed?tab=following' : '/v1/feed').then(function (r) {
+    var vids = r.data.videos || [];
+    /* Bug fix (QA #10): the same underlying media seeded as several
+     * posts read as one video repeated over and over. Collapse exact
+     * duplicates (same media URL) so each video appears once. */
+    var seenMedia = {};
+    S.feed = vids.filter(function (v) {
+      var k = v.sourceUrl || v.id;
+      if (seenMedia[k]) return false;
+      seenMedia[k] = 1;
+      return true;
+    });
+    if (!S.feed.length && !following) {
       S.feed = DEMO_FEED.slice();
       noteDemoOnce();
     }
     renderFeed();
   }).catch(function () {
+    if (following) { S.feed = []; renderFeed(); return; }
     S.feed = DEMO_FEED.slice();
     noteDemoOnce();
     renderFeed();
@@ -2575,15 +2673,22 @@ function renderFeed() {
   var feed = $('feed');
   feed.innerHTML = '';
   var items = S.feed;
-  if (S.feedTab === 'following') {
+  if (S.feedTab === 'following' && S.demo) {
     var fol = items.filter(function (v) {
       return v.owner && DEMO_FOLLOWING.indexOf(v.owner.handle) >= 0;
     });
     if (fol.length) items = fol;
   }
-  items.forEach(function (item, idx) {
+  if (!items.length) {
+    feed.appendChild(el('p', 'sub', S.feedTab === 'following'
+      ? 'Nothing here yet — follow some creators and their newest videos will land in this tab.'
+      : 'Nothing here yet.'));
+  }
+  /* Bug fix (QA #9): the placeholder "AD SLOT" cards are gone — there
+   * is no ad backend behind them, and they read as broken content.
+   * Real ads can return when there is a real ad system to serve. */
+  items.forEach(function (item) {
     feed.appendChild(videoCard(item));
-    if ((idx + 1) % AD_EVERY === 0 && idx !== items.length - 1) feed.appendChild(adCard());
   });
   observeVideos();
   buildExploreGrid();
@@ -2864,10 +2969,13 @@ function buildExploreGrid() {
       var sv = document.createElement('video');
       sv.src = cs; sv.muted = true; sv.loop = true; sv.playsInline = true;
       sv.setAttribute('playsinline', ''); sv.setAttribute('preload', 'metadata');
-      var sp = posterSrc(v);
+      /* Bug fix (QA #11): tiles never used the server posterUrl (only
+       * a local demo poster map), so any tile whose video could not
+       * load rendered as a blank peach square. Use the real poster;
+       * also stop auto-playing every tile in the grid. */
+      var sp = posterSrc(v) || (v.posterUrl ? mediaSrc(v.posterUrl) : null);
       if (sp) sv.setAttribute('poster', sp);
       sq.appendChild(sv);
-      var sp2 = sv.play(); if (sp2) sp2.catch(function () {});
     } else {
       sq.style.background = gradientFor(v.owner ? v.owner.handle : v.id);
       sq.appendChild(el('span', null, posterEmoji(v)));
@@ -2875,7 +2983,9 @@ function buildExploreGrid() {
     if (v.kind === 'ai') { var b = el('span', 'sq-ai kind-badge', '✦ AI'); sq.appendChild(b); }
     var meta = el('div', 'sq-meta');
     meta.appendChild(el('span', null, '@' + (v.owner ? v.owner.handle : '')));
-    meta.appendChild(el('span', null, '▶ ' + fmtCount(v.likeCount * 7)));
+    /* Was: likeCount * 7 displayed as a view count — a fabricated
+     * number. Show the real view count when the server provides one. */
+    if (typeof v.viewCount === 'number') meta.appendChild(el('span', null, '▶ ' + fmtCount(v.viewCount)));
     sq.appendChild(meta);
     sq.addEventListener('click', function () { jumpToVideo(v); });
     grid.appendChild(sq);
@@ -3872,12 +3982,22 @@ function createRoom() {
 function loadLive() {
   if (S.demo || !S.token) { S.liveRooms = DEMO_LIVE.slice(); renderLive(); return; }
   api('/v1/live').then(function (r) {
-    var real = (r.data.live || []).map(function (room) {
+    /* Bug fix (QA #12): demo streams were concatenated into the REAL
+     * "Live now" list (signed-in users saw DEMO cards and duplicates
+     * of the same streamer). Signed-in lists show real rooms only,
+     * deduped by streamer. */
+    var seenStreamer = {};
+    var real = (r.data.live || []).filter(function (room) {
+      var k = room.streamer ? (room.streamer.id || room.streamer.handle) : room.id;
+      if (seenStreamer[k]) return false;
+      seenStreamer[k] = 1;
+      return true;
+    }).map(function (room) {
       return { id: room.id, demo: false, title: room.title, streamer: room.streamer, viewers: null, emoji: '🔴', liveRoom: room };
     });
-    S.liveRooms = real.concat(DEMO_LIVE);
+    S.liveRooms = real;
     renderLive();
-  }).catch(function () { S.liveRooms = DEMO_LIVE.slice(); renderLive(); });
+  }).catch(function () { S.liveRooms = []; renderLive(); });
 }
 function renderLive() {
   var grid = $('live-grid');
@@ -3905,8 +4025,32 @@ function renderLive() {
     grid.appendChild(card);
   });
 }
+/* End the signed-in host's own stream (POST /v1/live/:id/end — the
+ * endpoint existed; the web host view never called it, so a started
+ * stream could never be ended — QA #2). */
+function endLive() {
+  var s = S.currentLive;
+  if (!s || s.demo || !S.token) return;
+  if (!window.confirm('End your stream now?')) return;
+  api('/v1/live/' + s.id + '/end', { method: 'POST', body: {} }).then(function () {
+    stopLiveChatPolling();
+    stopLiveVideo();
+    closeGiftShelf();
+    S.currentLive = null;
+    showPanel('live');
+    loadLive();
+    toast('Stream ended.');
+  }).catch(function (e) { toast(localizedError(e)); });
+}
 function openLiveRoom(s) {
   S.currentLive = s;
+  /* The End stream button belongs to the HOST only — viewers of
+   * someone else's stream must never see it (QA #27). */
+  var endBtn = $('lr-end-btn');
+  if (endBtn) {
+    var mine = !s.demo && S.user && s.streamer && s.streamer.id === S.user.id;
+    endBtn.classList.toggle('hidden', !mine);
+  }
   $('lr-title').textContent = s.title;
   $('lr-streamer').textContent = '@' + (s.streamer ? s.streamer.handle : '');
   $('lr-viewers-n').textContent = (s.viewers !== null && s.viewers !== undefined ? fmtCount(s.viewers) : '—');
@@ -4214,6 +4358,10 @@ function goLive() {
     msg.classList.add('error');
     return;
   }
+  /* Bug fix (QA #2): going live used to happen on a single accidental
+   * tap — no confirmation, no title, and then no way to end it. Ask
+   * first; the host End flow is endLive() below. */
+  if (!window.confirm('Go live now? Your stream will be public and listed under “Live now” until you end it.')) return;
   api('/v1/live', { method: 'POST', body: { title: (S.user.displayName || S.user.handle) + t('isLiveSuffix') } }).then(function (r) {
     var stream = r.data.stream || {};
     var room = r.data.liveRoom || {};
@@ -4269,7 +4417,12 @@ function renderPackList(list, msg, fromPopup) {
     var row = el('div', 'pack');
     var left = el('div');
     left.appendChild(el('div', 'pack-credits', '✦ ' + pack.credits + ' ' + t('credits')));
-    left.appendChild(el('div', 'pack-price', '$' + Number(pack.priceUsd).toFixed(2) + ' · ' + t('perCreditPrice')));
+    /* Bug fix (QA #13): the per-credit label was a hardcoded
+     * "$2.00 / credit" string while the packs actually price credits
+     * at $0.02 each (1000 for $20) — 100x off. Compute it honestly
+     * from the pack itself. */
+    var perCredit = Number(pack.credits) > 0 ? (Number(pack.priceUsd) / Number(pack.credits)) : 0;
+    left.appendChild(el('div', 'pack-price', '$' + Number(pack.priceUsd).toFixed(2) + ' · $' + perCredit.toFixed(2) + ' / credit'));
     row.appendChild(left);
     var buy = el('button', 'pack-buy', t('buy'));
     buy.addEventListener('click', function () { buyPack(pack, msg, fromPopup); });
@@ -5159,6 +5312,15 @@ function wire() {
   $('auth-tab-login').addEventListener('click', function () { setAuthMode('login'); });
   $('auth-tab-register').addEventListener('click', function () { setAuthMode('register'); });
   $('auth-submit').addEventListener('click', submitAuth);
+  var fkLink = $('auth-forgot-link');
+  if (fkLink) fkLink.addEventListener('click', function () {
+    var rp = $('reset-panel');
+    if (rp) { rp.classList.toggle('hidden'); resetMsg(''); }
+  });
+  var rsSend = $('reset-send'); if (rsSend) rsSend.addEventListener('click', sendResetCode);
+  var rsSubmit = $('reset-submit'); if (rsSubmit) rsSubmit.addEventListener('click', submitReset);
+  var rsBack = $('reset-back'); if (rsBack) rsBack.addEventListener('click', function () { hide($('reset-panel')); });
+  var chpwBtn = $('chpw-btn'); if (chpwBtn) chpwBtn.addEventListener('click', submitChangePassword);
   $('auth-password').addEventListener('keydown', function (e) { if (e.key === 'Enter') submitAuth(); });
   $('demo-browse-btn').addEventListener('click', browseDemo);
   $('logout-btn').addEventListener('click', logout);
@@ -5273,6 +5435,7 @@ function wire() {
   $('voice-rec-send').addEventListener('click', function () { stopVoiceRecording(true); });
 
   $('go-live-btn').addEventListener('click', goLive);
+  var lrEnd = $('lr-end-btn'); if (lrEnd) lrEnd.addEventListener('click', endLive);
   $('live-back').addEventListener('click', function () {
     stopLiveChatPolling();
     stopLiveVideo();
