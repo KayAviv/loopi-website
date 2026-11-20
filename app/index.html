@@ -414,6 +414,15 @@ if (location.pathname === '/app') { location.replace('/app/' + location.search +
         <div id="notif-prefs"></div>
         <p class="sub" data-i18n="notifPrefsNote">Choose what lands in your inbox. Turned-off types are never created.</p>
       </div>
+      <div class="settings-group" id="activity-settings-group">
+        <h3 class="section-title" data-i18n="showActivity">Show activity status</h3>
+        <label class="switch-row">
+          <span data-i18n="showActivity">Show activity status</span>
+          <input id="activity-toggle" type="checkbox">
+        </label>
+        <p class="sub" data-i18n="showActivityNote">Let people you chat with see when you are online and when you were last active.</p>
+        <p id="activity-msg" class="form-msg"></p>
+      </div>
       <div class="settings-group" id="account-settings-group">
         <h3 class="section-title">Account</h3>
         <p class="sub">Signed in as <b id="acct-email">—</b></p>
@@ -531,10 +540,20 @@ if (location.pathname === '/app') { location.replace('/app/' + location.search +
     <div id="panel-chat" class="panel hidden">
       <header class="page-head chat-head">
         <button id="chat-back" class="icon-btn" aria-label="Back" data-i18n-aria="ariaBack">‹</button>
-        <h2 id="chat-title">Chat</h2>
+        <div class="chat-title-wrap">
+          <h2 id="chat-title">Chat</h2>
+          <div id="chat-presence-row" class="chat-presence-row hidden">
+            <span id="chat-presence-dot" class="presence-dot hidden"></span>
+            <span id="chat-presence"></span>
+          </div>
+        </div>
         <span id="chat-demo-tag" class="demo-tag hidden" data-i18n="demoTag">demo</span>
       </header>
       <div id="chat-messages" class="chat-messages"></div>
+      <div id="chat-typing" class="chat-typing hidden">
+        <span class="typing-bubble"><span class="tdot"></span><span class="tdot"></span><span class="tdot"></span></span>
+        <span class="typing-text" data-i18n="typing">typing…</span>
+      </div>
       <div id="share-picker" class="share-picker hidden">
         <p class="sub" data-i18n="shareWhich">Share which video?</p>
         <div id="share-picker-list" class="share-picker-list"></div>

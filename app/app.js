@@ -302,6 +302,13 @@ var STRINGS = {
     emailPasswordRequired: 'Email and password are required.',
     onboardSaveFailed: 'Could not save \u2014 you can change interests later in your profile.',
     directMessage: 'Direct message',
+    typing: 'typing\u2026', activeNow: 'Active now', activeAgo: 'Active {t} ago',
+    activeYesterday: 'Active yesterday', seenWord: 'Seen', sentWord: 'Sent',
+    showActivity: 'Show activity status',
+    showActivityNote: 'Let people you chat with see when you are online and when you were last active.',
+    activityNeedsAccount: 'Activity status needs a real account.',
+    activitySavedOn: 'Activity status is on \u2014 people you chat with can see when you are active.',
+    activitySavedOff: 'Activity status is off.',
     roomKind_dm: 'dm', roomKind_group: 'group', roomKind_open: 'open', roomKind_private: 'private',
     roomPasswordTag: 'password',
     noChatsYet: 'No chats yet \u2014 create a room below, or share a video to a friend.',
@@ -651,6 +658,13 @@ var STRINGS = {
     emailPasswordRequired: '\u90AE\u7BB1\u548C\u5BC6\u7801\u662F\u5FC5\u586B\u7684\u3002',
     onboardSaveFailed: '\u4FDD\u5B58\u5931\u8D25 \u2014 \u4F60\u53EF\u4EE5\u4E4B\u540E\u5728\u4E2A\u4EBA\u8D44\u6599\u91CC\u4FEE\u6539\u5174\u8DA3\u3002',
     directMessage: '\u79C1\u4FE1',
+    typing: '\u6B63\u5728\u8F93\u5165\u2026', activeNow: '\u73B0\u5728\u6D3B\u8DC3', activeAgo: '{t}\u524D\u6D3B\u8DC3',
+    activeYesterday: '\u6628\u5929\u6D3B\u8DC3', seenWord: '\u5DF2\u8BFB', sentWord: '\u5DF2\u53D1\u9001',
+    showActivity: '\u663E\u793A\u6D3B\u52A8\u72B6\u6001',
+    showActivityNote: '\u8BA9\u548C\u4F60\u804A\u5929\u7684\u4EBA\u770B\u5230\u4F60\u4F55\u65F6\u5728\u7EBF\uFF0C\u4EE5\u53CA\u4F60\u4E0A\u6B21\u6D3B\u8DC3\u7684\u65F6\u95F4\u3002',
+    activityNeedsAccount: '\u6D3B\u52A8\u72B6\u6001\u9700\u8981\u771F\u5B9E\u8D26\u6237\u3002',
+    activitySavedOn: '\u6D3B\u52A8\u72B6\u6001\u5DF2\u5F00\u542F\u2014\u2014\u548C\u4F60\u804A\u5929\u7684\u4EBA\u53EF\u4EE5\u770B\u5230\u4F60\u4F55\u65F6\u6D3B\u8DC3\u3002',
+    activitySavedOff: '\u6D3B\u52A8\u72B6\u6001\u5DF2\u5173\u95ED\u3002',
     roomKind_dm: '\u79C1\u804A', roomKind_group: '\u7FA4\u804A', roomKind_open: '\u5F00\u653E', roomKind_private: '\u79C1\u5BC6',
     roomPasswordTag: '\u5BC6\u7801',
     noChatsYet: '\u8FD8\u6CA1\u6709\u804A\u5929 \u2014 \u5728\u4E0B\u9762\u5EFA\u4E2A\u623F\u95F4\uFF0C\u6216\u628A\u89C6\u9891\u5206\u4EAB\u7ED9\u670B\u53CB\u3002',
@@ -1084,6 +1098,13 @@ var STRINGS = {
     emailPasswordRequired: '\u0908\u092E\u0947\u0932 \u0914\u0930 \u092A\u093E\u0938\u0935\u0930\u094D\u0921 \u091C\u093C\u0930\u0942\u0930\u0940 \u0939\u0948\u0902\u0964',
     onboardSaveFailed: '\u0938\u0947\u0935 \u0928\u0939\u0940\u0902 \u0939\u094B \u0938\u0915\u093E \u2014 \u0906\u092A \u092C\u093E\u0926 \u092E\u0947\u0902 \u0905\u092A\u0928\u0940 \u092A\u094D\u0930\u094B\u092B\u093C\u093E\u0907\u0932 \u092E\u0947\u0902 \u0930\u0941\u091A\u093F\u092F\u093E\u0902 \u092C\u0926\u0932 \u0938\u0915\u0924\u0947 \u0939\u0948\u0902\u0964',
     directMessage: '\u0921\u093E\u092F\u0930\u0947\u0915\u094D\u091F \u092E\u0948\u0938\u0947\u091C',
+    typing: '\u091F\u093E\u0907\u092A \u0915\u0930 \u0930\u0939\u0947 \u0939\u0948\u0902\u2026', activeNow: '\u0905\u092D\u0940 \u0938\u0915\u094D\u0930\u093F\u092F', activeAgo: '{t} \u092A\u0939\u0932\u0947 \u0938\u0915\u094D\u0930\u093F\u092F',
+    activeYesterday: '\u0915\u0932 \u0938\u0915\u094D\u0930\u093F\u092F', seenWord: '\u0926\u0947\u0916\u093E \u0917\u092F\u093E', sentWord: '\u092D\u0947\u091C\u093E \u0917\u092F\u093E',
+    showActivity: '\u0917\u0924\u093F\u0935\u093F\u0927\u093F \u0938\u094D\u0925\u093F\u0924\u093F \u0926\u093F\u0916\u093E\u090F\u0902',
+    showActivityNote: '\u0906\u092A\u0915\u0947 \u0938\u093E\u0925 \u091A\u0948\u091F \u0915\u0930\u0928\u0947 \u0935\u093E\u0932\u094B\u0902 \u0915\u094B \u0926\u0947\u0916\u0928\u0947 \u0926\u0947\u0902 \u0915\u093F \u0906\u092A \u0915\u092C \u0938\u0915\u094D\u0930\u093F\u092F \u0939\u0948\u0902 \u0914\u0930 \u0906\u0916\u093F\u0930\u0940 \u092C\u093E\u0930 \u0915\u092C \u0938\u0915\u094D\u0930\u093F\u092F \u0925\u0947\u0964',
+    activityNeedsAccount: '\u0917\u0924\u093F\u0935\u093F\u0927\u093F \u0938\u094D\u0925\u093F\u0924\u093F \u0915\u0947 \u0932\u093F\u090F \u0905\u0938\u0932\u0940 \u0916\u093E\u0924\u093E \u091A\u093E\u0939\u093F\u090F\u0964',
+    activitySavedOn: '\u0917\u0924\u093F\u0935\u093F\u0927\u093F \u0938\u094D\u0925\u093F\u0924\u093F \u091A\u093E\u0932\u0942 \u0939\u0948 \u2014 \u0906\u092A\u0915\u0947 \u0938\u093E\u0925 \u091A\u0948\u091F \u0915\u0930\u0928\u0947 \u0935\u093E\u0932\u0947 \u0926\u0947\u0916 \u0938\u0915\u0924\u0947 \u0939\u0948\u0902 \u0915\u093F \u0906\u092A \u0915\u092C \u0938\u0915\u094D\u0930\u093F\u092F \u0939\u0948\u0902\u0964',
+    activitySavedOff: '\u0917\u0924\u093F\u0935\u093F\u0927\u093F \u0938\u094D\u0925\u093F\u0924\u093F \u092C\u0902\u0926 \u0939\u0948\u0964',
     roomKind_dm: 'dm',
     roomKind_group: 'group',
     roomKind_open: 'open',
@@ -1317,7 +1338,7 @@ function applyI18n() {
   if (S.creatorProfile) renderCreator();
   if (typeof pkPaint === 'function' && window.pk) pkPaint();
   if (S.user) { paintProfile(); renderProfileCredits(); }
-  if (S.currentRoom) loadMessages(S.currentRoom);
+  if (S.currentRoom) { paintChatHeader(); loadMessages(S.currentRoom); }
 }
 function setLang(next) {
   if (!STRINGS[next]) return;
@@ -2703,6 +2724,8 @@ function rtConnect() {
   es.addEventListener('video:engagement', function (ev) { rtOnEngagement(rtParse(ev)); });
   es.addEventListener('message:new', function (ev) { rtOnMessageNew(rtParse(ev)); });
   es.addEventListener('room:activity', function (ev) { rtOnRoomActivity(rtParse(ev)); });
+  es.addEventListener('message:typing', function (ev) { rtOnTyping(rtParse(ev)); });
+  es.addEventListener('room:read', function (ev) { rtOnRoomRead(rtParse(ev)); });
 }
 function rtParse(ev) {
   try { return JSON.parse(ev.data || '{}'); } catch (e) { return null; }
@@ -2764,6 +2787,8 @@ function rtOnEngagement(d) {
 function rtOnMessageNew(d) {
   if (!d || !d.roomId) return;
   if (S.currentRoom && S.currentRoom.id === d.roomId && S.currentPanel === 'chat') {
+    /* A real message from the peer ends their typing state. */
+    if (!S.user || d.userId !== S.user.id) hideTyping();
     rtAppendNewMessages();
     return;
   }
@@ -2777,11 +2802,170 @@ function rtOnRoomActivity(d) {
     rtAppendNewMessages();
   }
 }
+/* ---------------- chat presence: typing + seen receipts --------
+ * Typing is ephemeral: POST /v1/rooms/:id/typing {typing} out,
+ * SSE message:typing in. Presence rides on the room payloads
+ * (otherUser.online / otherUser.lastSeenAt — both keys ABSENT when
+ * the peer turned activity off, and absent means "render exactly
+ * what rendered before presence existed"). Seen receipts ride on
+ * the messages payload's reads map + SSE room:read. */
+var chatReads = {}; /* roomId -> { userId: {lastReadMessageId, lastReadAt} } */
+function roomPeer(room) {
+  if (!room) return null;
+  if (room.otherUser) return room.otherUser;
+  if (room.otherHandle) return { handle: room.otherHandle, displayName: room.name || room.otherHandle };
+  return null;
+}
+function presenceText(peer) {
+  if (!peer || !('online' in peer)) return null;
+  if (peer.online) return t('activeNow');
+  if (!peer.lastSeenAt) return null;
+  var then = new Date(peer.lastSeenAt).getTime();
+  if (!then) return null;
+  var now = new Date();
+  var startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  if (then < startToday && then >= startToday - 86400000) return t('activeYesterday');
+  return t('activeAgo').replace('{t}', agoText(then));
+}
+function paintChatHeader() {
+  var room = S.currentRoom;
+  if (!room) return;
+  $('chat-title').textContent = roomTitle(room);
+  var row = $('chat-presence-row');
+  if (!row) return;
+  var peer = room.type === 'dm' ? roomPeer(room) : null;
+  var txt = peer ? presenceText(peer) : null;
+  if (!txt) { row.classList.add('hidden'); return; }
+  $('chat-presence').textContent = txt;
+  $('chat-presence-dot').classList.toggle('hidden', !peer.online);
+  row.classList.remove('hidden');
+}
+/* --- typing out --- */
+var typingOut = { lastSent: 0, idleTimer: null, active: false, roomId: null };
+function sendTyping(flag) {
+  var room = S.currentRoom;
+  if (!room || room.demo || S.demo || !S.token) { typingOut.active = false; return; }
+  typingOut.active = flag;
+  if (flag) typingOut.lastSent = Date.now();
+  api('/v1/rooms/' + room.id + '/typing', { method: 'POST', body: { typing: flag } })
+    .catch(function () { /* typing is best-effort; never surface it */ });
+}
+function noteTypingInput() {
+  var room = S.currentRoom;
+  if (!room || room.demo || S.demo || !S.token) return;
+  if (typingOut.roomId !== room.id) {
+    typingOut.roomId = room.id; typingOut.lastSent = 0; typingOut.active = false;
+  }
+  if (!typingOut.active || Date.now() - typingOut.lastSent >= 2500) sendTyping(true);
+  if (typingOut.idleTimer) clearTimeout(typingOut.idleTimer);
+  typingOut.idleTimer = setTimeout(function () { typingOut.idleTimer = null; sendTyping(false); }, 3000);
+}
+function stopTyping() {
+  if (typingOut.idleTimer) { clearTimeout(typingOut.idleTimer); typingOut.idleTimer = null; }
+  if (typingOut.active) sendTyping(false);
+}
+/* --- typing in --- */
+var typingIn = { userId: null, timer: null };
+function showTyping(userId) {
+  typingIn.userId = userId || null;
+  var n = $('chat-typing');
+  if (n) n.classList.remove('hidden');
+  var wrap = $('chat-messages');
+  if (wrap && wrap.scrollHeight - wrap.scrollTop - wrap.clientHeight < 140) {
+    wrap.scrollTop = wrap.scrollHeight;
+  }
+  if (typingIn.timer) clearTimeout(typingIn.timer);
+  typingIn.timer = setTimeout(hideTyping, 5000);
+}
+function hideTyping() {
+  var n = $('chat-typing');
+  if (n) n.classList.add('hidden');
+  if (typingIn.timer) { clearTimeout(typingIn.timer); typingIn.timer = null; }
+  typingIn.userId = null;
+}
+function rtOnTyping(d) {
+  if (!d || !d.roomId) return;
+  var room = S.currentRoom;
+  if (!room || room.id !== d.roomId || S.currentPanel !== 'chat') return;
+  if (S.user && d.userId === S.user.id) return;
+  var peer = roomPeer(room);
+  if (peer && peer.id && d.userId && d.userId !== peer.id) return;
+  if (d.typing) showTyping(d.userId); else hideTyping();
+}
+/* --- seen receipts --- */
+function normalizeReads(map) {
+  var out = {};
+  if (!map) return out;
+  Object.keys(map).forEach(function (uid) {
+    var v = map[uid];
+    if (v && typeof v === 'object') {
+      out[uid] = { lastReadMessageId: v.lastReadMessageId || null, lastReadAt: v.lastReadAt || null };
+    } else if (v) {
+      out[uid] = { lastReadMessageId: v, lastReadAt: null };
+    }
+  });
+  return out;
+}
+function readCovers(rd, mid, ts) {
+  if (!rd || !mid) return false;
+  if (rd.lastReadMessageId === mid) return true;
+  var wrap = $('chat-messages');
+  if (wrap && rd.lastReadMessageId) {
+    var nodes = wrap.querySelectorAll('.msg[data-msg-id]');
+    var mi = -1, ri = -1;
+    for (var i = 0; i < nodes.length; i++) {
+      var id = nodes[i].getAttribute('data-msg-id');
+      if (id === mid) mi = i;
+      if (id === rd.lastReadMessageId) ri = i;
+    }
+    if (mi >= 0 && ri >= 0) return ri >= mi;
+  }
+  if (rd.lastReadAt && ts) return ts <= new Date(rd.lastReadAt).getTime();
+  return false;
+}
+var seenLineEl = null;
+function paintSeenLine() {
+  if (seenLineEl) {
+    if (seenLineEl.parentNode) seenLineEl.parentNode.removeChild(seenLineEl);
+    seenLineEl = null;
+  }
+  var room = S.currentRoom;
+  if (!room || room.type !== 'dm' || room.demo || S.demo) return;
+  var peer = roomPeer(room);
+  if (!peer || !peer.id) return;
+  var wrap = $('chat-messages');
+  if (!wrap) return;
+  var mine = wrap.querySelectorAll('.msg.me[data-msg-id]');
+  if (!mine.length) return;
+  var last = mine[mine.length - 1];
+  var mid = last.getAttribute('data-msg-id');
+  var tsAttr = last.getAttribute('data-msg-ts');
+  var ts = tsAttr ? Number(tsAttr) : null;
+  var rd = (chatReads[room.id] || {})[peer.id];
+  var line;
+  if (readCovers(rd, mid, ts)) {
+    line = el('div', 'chat-seen-line', t('seenWord'));
+  } else {
+    var when = ts ? new Date(ts).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '';
+    line = el('div', 'chat-seen-line', t('sentWord') + (when ? ' \u00B7 ' + when : ''));
+  }
+  seenLineEl = line;
+  last.parentNode.insertBefore(line, last.nextSibling);
+}
+function rtOnRoomRead(d) {
+  if (!d || !d.roomId || !d.userId) return;
+  if (!chatReads[d.roomId]) chatReads[d.roomId] = {};
+  chatReads[d.roomId][d.userId] = {
+    lastReadMessageId: d.lastReadMessageId || null, lastReadAt: d.lastReadAt || null
+  };
+  if (S.currentRoom && S.currentRoom.id === d.roomId && S.currentPanel === 'chat') paintSeenLine();
+}
 function rtAppendNewMessages() {
   var room = S.currentRoom;
   if (!room || room.demo || S.demo || !S.token) return;
   api('/v1/rooms/' + room.id + '/messages').then(function (r) {
     if (!S.currentRoom || S.currentRoom.id !== room.id) return;
+    if (r.data.reads) chatReads[room.id] = normalizeReads(r.data.reads);
     var wrap = $('chat-messages');
     var nearBottom = wrap.scrollHeight - wrap.scrollTop - wrap.clientHeight < 140;
     var fresh = [];
@@ -2795,6 +2979,7 @@ function rtAppendNewMessages() {
       armVoiceTranscriptPoll(fresh);
       if (nearBottom) wrap.scrollTop = wrap.scrollHeight;
     }
+    paintSeenLine();
   }).catch(function () { /* the next navigation reloads the room */ });
 }
 function loadFeed() {
@@ -3927,6 +4112,9 @@ function applyXpAward(xa) {
 /* ---------------- inbox + chat ---------------- */
 function roomTitle(room) {
   if (room.name) return room.name;
+  if (room.type === 'dm' && room.otherUser) {
+    return room.otherUser.displayName || room.otherUser.handle || t('directMessage');
+  }
   if (room.type === 'dm') return t('directMessage');
   return room.type;
 }
@@ -3947,7 +4135,13 @@ function renderRooms() {
   if (!S.rooms.length) list.appendChild(el('p', 'sub', t('noChatsYet')));
   S.rooms.forEach(function (room) {
     var row = el('button', 'room-row');
-    row.appendChild(el('span', 'mini-avatar', initial(roomTitle(room))));
+    var avWrap = el('span', 'rr-avatar');
+    avWrap.appendChild(el('span', 'mini-avatar', initial(roomTitle(room))));
+    /* Presence: green dot only when the peer's payload carries the
+     * fields at all AND they are online right now. */
+    var peer = room.type === 'dm' ? roomPeer(room) : null;
+    if (peer && peer.online) avWrap.appendChild(el('span', 'presence-dot rr-dot'));
+    row.appendChild(avWrap);
     var main = el('span', 'rr-main');
     main.appendChild(el('div', 'rr-name', roomTitle(room)));
     main.appendChild(el('div', 'rr-sub', roomSub(room)));
@@ -3980,12 +4174,16 @@ function openRoom(room) {
   enterChat(room);
 }
 function enterChat(room) {
+  /* Leaving the previous thread: stop announcing typing in it and
+   * clear any typing indicator it was showing. */
+  stopTyping();
+  hideTyping();
   S.currentRoom = room;
   /* Opening a room clears its live unread badge and restarts the
    * rendered-message ledger the real-time appender dedupes with. */
   if (S.roomUnread[room.id]) { delete S.roomUnread[room.id]; renderRooms(); }
   S.chatSeen = {};
-  $('chat-title').textContent = roomTitle(room);
+  paintChatHeader();
   $('chat-demo-tag').classList.toggle('hidden', !room.demo);
   $('chat-game-btn').classList.toggle('hidden', room.type !== 'group');
   $('chat-msg').textContent = '';
@@ -4059,6 +4257,13 @@ function gameResultsCard(m) {
 function messageNode(m) {
   var mine = m.mine !== undefined ? m.mine : (S.user && m.sender && m.sender.id === S.user.id);
   var node = el('div', 'msg ' + (mine ? 'me' : 'them'));
+  /* The seen-receipt line locates the viewer's newest message (and
+   * the peer's read marker) by these two attributes. */
+  if (m.id) node.setAttribute('data-msg-id', m.id);
+  if (m.createdAt) {
+    var mts = new Date(m.createdAt).getTime();
+    if (mts) node.setAttribute('data-msg-ts', String(mts));
+  }
   var who = m.sender ? (m.sender.displayName || m.sender.handle) : '';
   if (who && !mine) node.appendChild(el('span', 'msg-who', who));
   if (m.type === 'challenge') {
@@ -4119,7 +4324,9 @@ function loadMessages() {
   }
   api('/v1/rooms/' + room.id + '/messages').then(function (r) {
     wrap.innerHTML = '';
+    if (r.data.reads) chatReads[room.id] = normalizeReads(r.data.reads);
     (r.data.messages || []).forEach(function (m) { S.chatSeen[m.id] = 1; wrap.appendChild(messageNode(m)); });
+    paintSeenLine();
     armVoiceTranscriptPoll(r.data.messages || []);
     // Game challenges are a local demo layer for now (labelled demo in
     // the card) — they append after the server's real messages.
@@ -4132,6 +4339,7 @@ function sendChatMessage() {
   var text = $('chat-input').value.trim();
   if (!room || !text) return;
   $('chat-input').value = '';
+  stopTyping();
   if (room.demo || S.demo || !S.token) {
     var m = { id: 'local_' + Date.now(), sender: S.user, type: 'text', text: text, mine: true };
     if (!DEMO_MESSAGES[room.id]) DEMO_MESSAGES[room.id] = [];
@@ -4144,6 +4352,7 @@ function sendChatMessage() {
     .then(function (r) {
       S.chatSeen[r.data.message.id] = 1;
       $('chat-messages').appendChild(messageNode(r.data.message));
+      paintSeenLine();
       $('chat-messages').scrollTop = $('chat-messages').scrollHeight;
     })
     .catch(function (e) { $('chat-msg').textContent = localizedError(e); });
@@ -6247,6 +6456,8 @@ function loadAccountSettings() {
     if (ha && document.activeElement !== ha) ha.value = u.homeArea || '';
     var tg = $('tfa-toggle');
     if (tg) tg.checked = !!u.twoFactorEnabled;
+    var at = $('activity-toggle');
+    if (at) at.checked = u.showActivity !== false;
     var hn = $('chhandle-new');
     if (hn && document.activeElement !== hn) hn.value = u.handle || '';
     var note = $('chhandle-note');
@@ -6302,6 +6513,23 @@ function submitHomeArea() {
   var msg = $('homearea-msg');
   if (!area) { msg.textContent = 'Type your home area first.'; msg.classList.add('error'); return; }
   saveHomeArea(area, msg, null);
+}
+function onActivityToggle() {
+  var on = $('activity-toggle').checked;
+  apiNote('activity-msg', '');
+  if (S.demo || !S.token) {
+    apiNote('activity-msg', t('activityNeedsAccount'), true);
+    $('activity-toggle').checked = true;
+    return;
+  }
+  api('/v1/me', { method: 'PATCH', body: { showActivity: on } }).then(function (r) {
+    if (r.data && r.data.user) S.user = r.data.user;
+    else if (S.user) S.user.showActivity = on;
+    apiNote('activity-msg', on ? t('activitySavedOn') : t('activitySavedOff'));
+  }).catch(function (e) {
+    $('activity-toggle').checked = !on;
+    apiNote('activity-msg', localizedError(e), true);
+  });
 }
 function onTfaToggle() {
   var on = $('tfa-toggle').checked;
@@ -6473,6 +6701,7 @@ function wire() {
   var chSave = $('channel-save'); if (chSave) chSave.addEventListener('click', saveChannelSettings);
   var onMapBox = $('upload-onmap'); if (onMapBox) onMapBox.addEventListener('change', function () { $('upload-onmap-note').classList.toggle('hidden', !this.checked); });
   $('tfa-toggle').addEventListener('change', onTfaToggle);
+  $('activity-toggle').addEventListener('change', onActivityToggle);
   $('tfa-submit').addEventListener('click', submitTfa);
   $('tfa-back').addEventListener('click', function () { hide($('tfa-panel')); });
   $('edit-profile-btn').addEventListener('click', openEditProfile);
@@ -6518,11 +6747,14 @@ function wire() {
     $('room-password-row').style.opacity = this.value === 'private' ? '1' : '.45';
   });
   $('chat-back').addEventListener('click', function () {
+    stopTyping(); hideTyping();
     stopVoiceRecording(false); stopVoicePlayback(); stopVoiceTranscriptPoll();
     showPanel('inbox'); loadRooms();
   });
   $('chat-send').addEventListener('click', sendChatMessage);
   $('chat-input').addEventListener('keydown', function (e) { if (e.key === 'Enter') sendChatMessage(); });
+  $('chat-input').addEventListener('input', noteTypingInput);
+  $('chat-input').addEventListener('blur', stopTyping);
   $('chat-share-btn').addEventListener('click', toggleSharePicker);
   $('chat-mic-btn').addEventListener('click', startVoiceRecording);
   $('voice-rec-cancel').addEventListener('click', function () { stopVoiceRecording(false); });
