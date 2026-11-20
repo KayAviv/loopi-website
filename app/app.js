@@ -138,7 +138,7 @@ var STRINGS = {
     deleteNeedsAccount: 'Demo accounts have nothing to delete — sign in with a real account first.',
     shareWhich: 'Share which video?', comments: 'Comments',
     create: 'Create', recordUpload: 'Record / Upload',
-    uploadNote: 'Your own video, up to 20 seconds.',
+    uploadNote: 'Your own video (up to 10 minutes) or a photo \u2014 record it here, take a photo, or pick a file.',
     generateAi: 'Generate with AI',
     generateNote: 'Describe it — AI makes it. The price is always on the button.',
     promptPlaceholder: 'A panda skateboarding through neon Tokyo at night…',
@@ -244,7 +244,7 @@ var STRINGS = {
     shareDefaultText: 'Watch this on LOOPI',
     linkCopied: 'Link copied \u2014 paste it into WhatsApp, Instagram, SMS\u2026',
     nothingMatches: 'Nothing matches \u2014 try another word.',
-    uploadTooLong: 'That video is {s}s \u2014 LOOPI caps uploads at 20 seconds. Trim it and try again.',
+    uploadTooLong: 'That video is {s}s \u2014 LOOPI caps uploads at 10 minutes (600s). Trim it and try again.',
     uploadLooksGood: 'Looks good ({s}s).',
     uploadCheckingToast: 'Uploaded — safety check running. It appears in the feed once it passes.',
     modChecking: 'Checking…',
@@ -254,6 +254,16 @@ var STRINGS = {
     uploadPostBtn: 'Post to LOOPI',
     uploadReadyPost: 'Ready \u2014 tap Post to publish it for everyone.',
     uploadLocalOnly: 'Preview is only on this device. Sign in to post it for everyone.',
+    uploadPhotoReady: 'Photo ready.',
+    uploadNotPhoto: 'Could not read that file as a photo.',
+    cameraUnavailable: 'Camera is not available here \u2014 the browser refused it or there is no camera. Pick a file instead.',
+    cameraStarting: 'Starting the camera\u2026',
+    cameraReadyVideo: 'Camera on \u2014 tap Start recording when you are ready.',
+    cameraReadyPhoto: 'Camera on \u2014 tap Capture photo when you are ready.',
+    recorderUnavailable: 'This browser cannot record video \u2014 pick a file instead.',
+    recordingNow: 'Recording\u2026 tap Stop when done (10 minutes max).',
+    recStart: 'Start recording',
+    recStop: 'Stop recording',
     uploadingPct: 'Uploading\u2026 {p}%',
     uploadPosted: 'Posted \u2014 your video is live on LOOPI.',
     addSong: 'Add a song',
@@ -477,7 +487,7 @@ var STRINGS = {
     deleteNeedsAccount: '演示账号没有可删除的内容 — 请先登录真实账号。',
     shareWhich: '分享哪个视频？', comments: '评论',
     create: '创作', recordUpload: '录制 / 上传',
-    uploadNote: '你自己的视频，最长 20 秒。',
+    uploadNote: '你自己的视频（最长 10 分钟）或照片 — 可以在这里录制、拍照或选择文件。',
     generateAi: '用 AI 生成',
     generateNote: '描述它 — AI 来制作。价格永远写在按钮上。',
     promptPlaceholder: '一只熊猫在霓虹闪烁的东京夜里滑滑板…',
@@ -583,7 +593,7 @@ var STRINGS = {
     shareDefaultText: '\u6765 LOOPI \u770B\u8FD9\u4E2A\u89C6\u9891',
     linkCopied: '\u94FE\u63A5\u5DF2\u590D\u5236 \u2014 \u7C98\u8D34\u5230 WhatsApp\u3001Instagram\u3001\u77ED\u4FE1\u2026',
     nothingMatches: '\u6CA1\u6709\u5339\u914D\u7ED3\u679C \u2014 \u6362\u4E2A\u8BCD\u8BD5\u8BD5\u3002',
-    uploadTooLong: '\u8FD9\u4E2A\u89C6\u9891\u6709 {s} \u79D2 \u2014 LOOPI \u7684\u4E0A\u4F20\u4E0A\u9650\u662F 20 \u79D2\u3002\u526A\u77ED\u4E00\u70B9\u518D\u8BD5\u3002',
+    uploadTooLong: '\u8FD9\u4E2A\u89C6\u9891\u6709 {s} \u79D2 \u2014 LOOPI \u7684\u4E0A\u4F20\u4E0A\u9650\u662F 10 \u5206\u949F\uFF08600 \u79D2\uFF09\u3002\u526A\u77ED\u4E00\u70B9\u518D\u8BD5\u3002',
     uploadLooksGood: '\u6CA1\u95EE\u9898\uFF08{s} \u79D2\uFF09\u3002',
     uploadCaptionPh: '\u6DFB\u52A0\u8BF4\u660E\u2026',
     uploadPostBtn: '\u53D1\u5E03\u5230 LOOPI',
@@ -848,7 +858,7 @@ var STRINGS = {
     comments: '\u0915\u092E\u0947\u0902\u091F',
     create: '\u092C\u0928\u093E\u090F\u0902',
     recordUpload: '\u0930\u093F\u0915\u0949\u0930\u094D\u0921 / \u0905\u092A\u0932\u094B\u0921',
-    uploadNote: '\u0906\u092A\u0915\u093E \u0905\u092A\u0928\u093E \u0935\u0940\u0921\u093F\u092F\u094B, 20 \u0938\u0947\u0915\u0902\u0921 \u0924\u0915\u0964',
+    uploadNote: '\u0906\u092A\u0915\u093E \u0905\u092A\u0928\u093E \u0935\u0940\u0921\u093F\u092F\u094B (10 \u092E\u093F\u0928\u091F \u0924\u0915) \u092F\u093E \u092B\u093C\u094B\u091F\u094B \u2014 \u092F\u0939\u093E\u0901 \u0930\u093F\u0915\u0949\u0930\u094D\u0921 \u0915\u0930\u0947\u0902, \u092B\u093C\u094B\u091F\u094B \u0932\u0947\u0902 \u092F\u093E \u092B\u093C\u093E\u0907\u0932 \u091A\u0941\u0928\u0947\u0902\u0964',
     generateAi: 'AI \u0938\u0947 \u092C\u0928\u093E\u090F\u0902',
     generateNote: '\u092C\u0924\u093E\u090F\u0902 \u0915\u0948\u0938\u093E \u091A\u093E\u0939\u093F\u090F \u2014 AI \u092C\u0928\u093E \u0926\u0947\u0917\u093E\u0964 \u0915\u0940\u092E\u0924 \u0939\u092E\u0947\u0936\u093E \u092C\u091F\u0928 \u092A\u0930 \u0926\u093F\u0916\u0924\u0940 \u0939\u0948\u0964',
     promptPlaceholder: '\u0930\u093E\u0924 \u092E\u0947\u0902 \u0928\u0940\u092F\u0928 \u091F\u094B\u0915\u094D\u092F\u094B \u092E\u0947\u0902 \u0938\u094D\u0915\u0947\u091F\u092C\u094B\u0930\u094D\u0921 \u0915\u0930\u0924\u093E \u090F\u0915 \u092A\u093E\u0902\u0921\u093E\u2026',
@@ -1006,7 +1016,7 @@ var STRINGS = {
     shareDefaultText: '\u092F\u0939 LOOPI \u092A\u0930 \u0926\u0947\u0916\u0947\u0902',
     linkCopied: '\u0932\u093F\u0902\u0915 \u0915\u0949\u092A\u0940 \u0939\u094B \u0917\u092F\u093E \u2014 \u0907\u0938\u0947 WhatsApp, Instagram, SMS \u092E\u0947\u0902 \u092A\u0947\u0938\u094D\u091F \u0915\u0930\u0947\u0902\u2026',
     nothingMatches: '\u0915\u0941\u091B \u092E\u0948\u091A \u0928\u0939\u0940\u0902 \u0939\u0941\u0906 \u2014 \u0915\u094B\u0908 \u0914\u0930 \u0936\u092C\u094D\u0926 \u0906\u091C\u093C\u092E\u093E\u090F\u0902\u0964',
-    uploadTooLong: '\u0935\u094B \u0935\u0940\u0921\u093F\u092F\u094B {s}s \u0915\u093E \u0939\u0948 \u2014 LOOPI \u0905\u092A\u0932\u094B\u0921 20 \u0938\u0947\u0915\u0902\u0921 \u0924\u0915 \u0938\u0940\u092E\u093F\u0924 \u0930\u0916\u0924\u093E \u0939\u0948\u0964 \u0907\u0938\u0947 \u091F\u094D\u0930\u093F\u092E \u0915\u0930\u0915\u0947 \u092B\u093F\u0930 \u0915\u094B\u0936\u093F\u0936 \u0915\u0930\u0947\u0902\u0964',
+    uploadTooLong: '\u0935\u094B \u0935\u0940\u0921\u093F\u092F\u094B {s}s \u0915\u093E \u0939\u0948 \u2014 LOOPI \u0905\u092A\u0932\u094B\u0921 10 \u092E\u093F\u0928\u091F (600s) \u0924\u0915 \u0938\u0940\u092E\u093F\u0924 \u0930\u0916\u0924\u093E \u0939\u0948\u0964 \u0907\u0938\u0947 \u091F\u094D\u0930\u093F\u092E \u0915\u0930\u0915\u0947 \u092B\u093F\u0930 \u0915\u094B\u0936\u093F\u0936 \u0915\u0930\u0947\u0902\u0964',
     uploadLooksGood: '\u092C\u0922\u093C\u093F\u092F\u093E \u0932\u0917 \u0930\u0939\u093E \u0939\u0948 ({s}s)\u0964',
     uploadCaptionPh: '\u0915\u0948\u092A\u094D\u0936\u0928 \u091C\u094B\u0921\u093C\u0947\u0902\u2026',
     uploadPostBtn: 'LOOPI \u092A\u0930 \u092A\u094B\u0938\u094D\u091F \u0915\u0930\u0947\u0902',
@@ -2033,6 +2043,7 @@ function renderCreator() {
   btn.classList.toggle('is-ghost', state === 'following' || state === 'requested');
   btn.textContent = state === 'following' ? t('followingBtn')
     : state === 'requested' ? t('requestedBtn') : t('follow');
+  paintChannelBox(p.channel, u);
   $('creator-locked').classList.toggle('hidden', !u.locked);
   document.getElementById('creator-videos-title').classList.toggle('hidden', !!u.locked);
   var grid = $('creator-grid');
@@ -2040,6 +2051,41 @@ function renderCreator() {
   if (!u.locked) {
     (p.videos || []).forEach(function (v) { grid.appendChild(profileVideoTile(v)); });
   }
+}
+/* Creator channel (QA #14): the profile payload already carries
+ * channel {subPrice, viewerSubscribed, subscriptionExpiresAt,
+ * subscriberCount} — render Subscribe / Renew from it and charge
+ * through POST /v1/users/:handle/subscribe (credits, 30 days,
+ * server-enforced). Demo profiles are built locally with no channel
+ * object, so the box never appears there. */
+function paintChannelBox(channel, u) {
+  var box = $('creator-channel'); if (!box) return;
+  var msg = $('creator-channel-msg');
+  if (msg) { msg.textContent = ''; msg.className = 'form-msg'; }
+  if (!channel || !(channel.subPrice > 0) || !u || u.followState === 'self') { hide(box); return; }
+  show(box);
+  var line = '✦ ' + channel.subPrice + ' credits / 30 days · ' + (channel.subscriberCount || 0) + ' subscribers';
+  if (channel.viewerSubscribed && channel.subscriptionExpiresAt) {
+    line += ' · You are subscribed until ' + new Date(channel.subscriptionExpiresAt).toLocaleDateString();
+  }
+  $('creator-channel-line').textContent = line;
+  $('creator-subscribe-btn').textContent = channel.viewerSubscribed ? 'Renew subscription' : 'Subscribe';
+}
+function subscribeToCreator() {
+  var p = S.creatorProfile; if (!p || !p.user) return;
+  var msg = $('creator-channel-msg');
+  var setMsg = function (tx, err) { if (msg) { msg.textContent = tx || ''; msg.className = 'form-msg' + (err ? ' error' : ''); } };
+  if (S.demo || !S.token) { setMsg('Subscribing needs a real account — you are browsing the demo.', true); return; }
+  var btn = $('creator-subscribe-btn'); btn.disabled = true;
+  api('/v1/users/' + encodeURIComponent(p.user.handle) + '/subscribe', { method: 'POST', body: {} }).then(function (r) {
+    btn.disabled = false;
+    if (r.data && typeof r.data.balance === 'number') {
+      S.credits = S.credits || {}; S.credits.balance = r.data.balance;
+      refreshCreditsPill(); updateGenBalance();
+    }
+    toast('Subscribed to @' + p.user.handle + ' for 30 days');
+    openCreator(p.user);
+  }).catch(function (e) { btn.disabled = false; setMsg(localizedError(e), true); });
 }
 function messageCreator() {
   var p = S.creatorProfile;
@@ -2145,6 +2191,7 @@ function paintSettings() {
   paintBioSettings();
   loadAccountSettings();
   loadBlocked();
+  loadCreatorSettings();
   var pub = $('privacy-public'), prv = $('privacy-private');
   if (!pub || !prv) return;
   var priv = currentPrivacy();
@@ -2166,6 +2213,111 @@ function paintSettings() {
     row.appendChild(input);
     box.appendChild(row);
   });
+}
+/* Creator & payouts settings (QA #14): the server surface existed
+ * (GET /v1/me/earnings, GET/PUT /v1/me/payout-method, GET
+ * /v1/me/payouts, PATCH /v1/me/channel) but the web Settings never
+ * showed any of it. Everything below renders server truth only —
+ * the bank number is write-only here exactly as on the server
+ * (responses carry accountLast4, never the number). */
+function loadCreatorSettings() {
+  var note = $('creator-settings-note');
+  if (!note) return;
+  if (S.demo || !S.token) {
+    note.textContent = 'Demo mode — earnings, payouts and channel settings need a real account.';
+    var eb0 = $('earn-balance'); if (eb0) eb0.textContent = '—';
+    return;
+  }
+  note.textContent = 'Your earnings balance, where payouts go, and your channel subscription.';
+  api('/v1/me/earnings').then(function (r) {
+    var d = r.data || {};
+    var eb = $('earn-balance'); if (eb) eb.textContent = '✦ ' + (d.balance || 0);
+    var box = $('earn-history'); if (!box) return;
+    box.innerHTML = '';
+    var hist = (d.history || []).slice(0, 8);
+    if (!hist.length) box.appendChild(el('p', 'sub', 'No earnings yet — tips, gifts, unlocks and subscriptions land here.'));
+    hist.forEach(function (e) {
+      var when = e.createdAt ? new Date(e.createdAt).toLocaleDateString() : '';
+      box.appendChild(el('p', 'sub', (e.delta >= 0 ? '+' : '−') + '✦ ' + Math.abs(e.delta || 0) + ' · ' + String(e.reason || '').replace(/_/g, ' ') + (when ? ' · ' + when : '')));
+    });
+    if (d.referral) box.appendChild(el('p', 'sub', 'Referrals: ✦ ' + (d.referral.total || 0) + ' earned · ' + (d.referral.referredCount || 0) + ' people joined with your handle'));
+  }).catch(function () { /* leave the placeholders */ });
+  api('/v1/me/payout-method').then(function (r) {
+    paintPayoutMethod(r.data && r.data.payoutMethod);
+  }).catch(function () { /* ignore */ });
+  api('/v1/me/payouts').then(function (r) {
+    var box = $('payout-history'); if (!box) return;
+    box.innerHTML = '';
+    var list = (r.data && r.data.payouts) || [];
+    if (!list.length) { box.appendChild(el('p', 'sub', 'No payouts yet. Payouts are processed weekly.')); return; }
+    list.slice(0, 8).forEach(function (x) {
+      var when = x.paidAt || x.createdAt;
+      box.appendChild(el('p', 'sub', '✦ ' + x.amountCredits + (x.amountUsd != null ? ' ($' + x.amountUsd + ')' : '') + ' · ' + (x.method || '') + ' · ' + (x.status || '') + (when ? ' · ' + new Date(when).toLocaleDateString() : '')));
+    });
+  }).catch(function () { /* ignore */ });
+  var u = S.user || {};
+  var cc = $('channel-current');
+  if (cc) cc.textContent = (u.channelSubPrice > 0)
+    ? 'Your channel: ✦ ' + u.channelSubPrice + ' / 30 days' + (u.channelPrivate ? ' · private page (subscribers only)' : ' · public page')
+    : 'You have no channel subscription price set.';
+  var price = $('channel-price');
+  if (price && document.activeElement !== price) price.value = u.channelSubPrice > 0 ? u.channelSubPrice : '';
+  var prv = $('channel-private'); if (prv) prv.checked = !!u.channelPrivate;
+}
+function paintPayoutMethod(pm) {
+  var cur = $('payout-current'); if (!cur) return;
+  var sel = $('payout-method-select');
+  if (!pm) { cur.textContent = 'Not set yet — add where your earnings should go.'; return; }
+  if (sel) sel.value = pm.method;
+  togglePayoutFields();
+  if (pm.method === 'paypal') {
+    cur.textContent = 'PayPal · ' + (pm.paypalEmail || '');
+    var em = $('payout-paypal-email'); if (em && !em.value) em.value = pm.paypalEmail || '';
+  } else {
+    cur.textContent = 'Bank transfer · ' + (pm.accountHolder || '') + ' · ' + (pm.bankName || '') + ' · account ••••' + (pm.accountLast4 || '') + ' · ' + (pm.country || '');
+    var h = $('payout-bank-holder'); if (h && !h.value) h.value = pm.accountHolder || '';
+    var n = $('payout-bank-name'); if (n && !n.value) n.value = pm.bankName || '';
+    var c = $('payout-bank-country'); if (c && !c.value) c.value = pm.country || '';
+  }
+}
+function togglePayoutFields() {
+  var sel = $('payout-method-select'); if (!sel) return;
+  var pp = $('payout-paypal-fields'), bf = $('payout-bank-fields');
+  if (pp) pp.classList.toggle('hidden', sel.value !== 'paypal');
+  if (bf) bf.classList.toggle('hidden', sel.value !== 'bank_transfer');
+}
+function savePayoutMethod() {
+  var msg = $('payout-msg');
+  var setMsg = function (tx, err) { if (msg) { msg.textContent = tx || ''; msg.className = 'form-msg' + (err ? ' error' : ''); } };
+  if (S.demo || !S.token) { setMsg('Saving a payout method needs a real account — you are browsing the demo.', true); return; }
+  var method = $('payout-method-select').value;
+  var body = { method: method };
+  if (method === 'paypal') body.paypalEmail = $('payout-paypal-email').value.trim();
+  else {
+    body.accountHolder = $('payout-bank-holder').value.trim();
+    body.bankName = $('payout-bank-name').value.trim();
+    body.accountNumber = $('payout-bank-number').value.trim();
+    body.country = $('payout-bank-country').value.trim();
+  }
+  setMsg('Saving…');
+  api('/v1/me/payout-method', { method: 'PUT', body: body }).then(function (r) {
+    setMsg('Payout method saved.');
+    var num = $('payout-bank-number'); if (num) num.value = '';
+    paintPayoutMethod(r.data && r.data.payoutMethod);
+  }).catch(function (e) { setMsg(localizedError(e), true); });
+}
+function saveChannelSettings() {
+  var msg = $('channel-msg');
+  var setMsg = function (tx, err) { if (msg) { msg.textContent = tx || ''; msg.className = 'form-msg' + (err ? ' error' : ''); } };
+  if (S.demo || !S.token) { setMsg('Channel settings need a real account — you are browsing the demo.', true); return; }
+  var raw = $('channel-price').value.trim();
+  var body = { subPrice: raw === '' ? null : Number(raw), isPrivate: $('channel-private').checked };
+  setMsg('Saving…');
+  api('/v1/me/channel', { method: 'PATCH', body: body }).then(function (r) {
+    if (r.data && r.data.user) S.user = Object.assign({}, S.user, r.data.user);
+    setMsg('Channel settings saved.');
+    loadCreatorSettings();
+  }).catch(function (e) { setMsg(localizedError(e), true); });
 }
 function saveNotifPref(type, on) {
   if (!S.notifPrefs) S.notifPrefs = currentPrefs();
@@ -2258,6 +2410,7 @@ function authMsg(text, isError) {
   m.className = 'form-msg' + (isError ? ' error' : '');
 }
 function enterApp(needsOnboarding) {
+  paintDemoChrome();
   showScreen('screen-main');
   showPanel('home');
   refreshCreditsPill();
@@ -2342,8 +2495,20 @@ function submitAuth() {
     });
   }
 }
+/* Demo chrome (QA #25): a persistent banner across the whole main
+ * screen while demo mode is on — the old build only flashed a toast
+ * at entry, after which the demo profile (@you.demo, 128 followers)
+ * read as a real account. The banner carries its own Exit demo
+ * action (wired to logout, which lands back on the auth screen). */
+function paintDemoChrome() {
+  var b = $('demo-banner');
+  if (b) b.classList.toggle('hidden', !S.demo);
+}
 function browseDemo() {
   S.demo = true;
+  /* QA #25: the demo feed must open on For You, not on whatever tab
+   * a previous session left selected. */
+  S.feedTab = 'foryou';
   S.user = { id: 'demo_me', handle: 'you.demo', displayName: t('youDemoName'), creatorLevel: 2, xp: 80, interests: ['food', 'comedy'],
     bio: 'Building in public — one short a day 🎬', followersCount: 128, followingCount: 86,
     badges: [{ id: 'first_upload', name: 'First Upload', icon: '🎬' }, { id: 'level_2', name: 'Rising', icon: '⬆' }],
@@ -2351,7 +2516,10 @@ function browseDemo() {
   S.myProfile = null;
   S.earnings = { balance: 12, history: [] };
   saveToken(null);
+  var ff = $('ftab-following'), fy = $('ftab-foryou'), nb2 = $('ftab-nearby');
+  if (ff) ff.classList.remove('on'); if (fy) fy.classList.add('on'); if (nb2) nb2.classList.remove('on');
   enterApp(false);
+  paintDemoChrome();
 }
 function logout() {
   var done = function () {
@@ -2367,6 +2535,7 @@ function logout() {
     var ageBox = $('auth-age'); if (ageBox) ageBox.checked = false;
     authMsg('');
     saveToken(null); S.user = null; S.demo = false;
+    paintDemoChrome();
     rtStop();
     S.myProfile = null;
     S.feed = []; S.rooms = []; S.roomUnread = {}; S.chatSeen = {};
@@ -2709,7 +2878,17 @@ function videoCard(item) {
   card.setAttribute('data-video-id', item.id);
   var src = clipSrc(item) || mediaSrc(item.sourceUrl);
   var vid = null;
-  if (src && (/\.(mp4|webm|mov)(\?|$)/i.test(src) || item.clip ||
+  var firstItem = (item.mediaItems && item.mediaItems.length) ? item.mediaItems[0] : null;
+  if (!item.clip && (item.mediaType === 'photo' || (firstItem && firstItem.type === 'photo'))) {
+    /* Photo post (QA #17 follow-through): render the image itself.
+     * The video path below would point a <video> at a JPEG and show
+     * a black card — the web client never read mediaType before. */
+    var pimg = document.createElement('img');
+    pimg.className = 'photo-img';
+    pimg.alt = '';
+    pimg.src = item.localUrl || mediaSrc(firstItem ? firstItem.url : (item.posterUrl || item.sourceUrl));
+    card.appendChild(pimg);
+  } else if (src && (/\.(mp4|webm|mov)(\?|$)/i.test(src) || item.clip ||
       (item.sourceUrl && item.sourceUrl.indexOf('/v1/media/') >= 0))) {
     vid = document.createElement('video');
     vid.src = src; vid.muted = true; vid.loop = true; vid.playsInline = true;
@@ -2769,7 +2948,7 @@ function videoCard(item) {
   rail.appendChild(railBtn(LOOPI_ICONS.svg('heart'), fmtCount(item.likeCount), function (btn) { toggleLike(item, btn); }, 'heart'));
   rail.appendChild(railBtn(LOOPI_ICONS.svg('comment'), item.commentCount >= 10000 ? fmtCount(item.commentCount) : Number(item.commentCount).toLocaleString('en-US'), function () { openComments(item); }, 'comment'));
   rail.appendChild(railBtn(LOOPI_ICONS.svg('share'), t('share'), function () { shareVideo(item); }, 'share'));
-  rail.appendChild(railBtn(LOOPI_ICONS.svg('repeat'), t('remix'), function () { openCreate(item.prompt || null); }, 'remix'));
+  rail.appendChild(railBtn(LOOPI_ICONS.svg('repeat'), t('remix'), function () { openRemix(item); }, 'remix'));
   rail.appendChild(railBtn('⋯', 'More', function () {
     openReportSheet({ video: item, user: item.owner });
   }, 'more'));
@@ -3145,7 +3324,37 @@ function openCreate(prefillPrompt) {
   updateGenBalance();
   updateBottomBar();
 }
-function closeCreate() { closeMusicSheet(); hide($('create-panel')); closeCreditsPopup(); updateBottomBar(); }
+function closeCreate() { closeCamera(); remixSource = null; paintRemixBanner(); closeMusicSheet(); hide($('create-panel')); closeCreditsPopup(); updateBottomBar(); }
+/* Remix (QA #14): the feed rail's Remix button used to call
+ * openCreate(item.prompt) — null for every upload, so it opened a
+ * blank sheet with no source attached. A remix now carries its
+ * source: the Create sheet shows who is being remixed, and an
+ * upload posted from it rides restyleOf so the server links the
+ * credit (and enforces the creator's allowRemix switch — checked
+ * here first so the refusal is instant and plain). AI generations
+ * cannot carry the link (/v1/generate has no provenance field), so
+ * the banner says the credit rides the Record / Upload door. */
+var remixSource = null;
+function openRemix(item) {
+  if (!item) return;
+  if (item.allowRemix === false) { toast('The creator turned off remixes for this post.'); return; }
+  if (item.demo || S.demo || !S.token) {
+    /* Demo/local items have no server record to credit — keep the
+     * prompt prefill without pretending a link will be attached. */
+    openCreate(item.prompt || null);
+    return;
+  }
+  remixSource = { id: item.id, handle: item.owner ? item.owner.handle : '' };
+  openCreate(item.prompt || null);
+  paintRemixBanner();
+}
+function paintRemixBanner() {
+  var b = $('remix-banner'); if (!b) return;
+  if (remixSource) {
+    $('remix-banner-text').textContent = 'Remixing @' + remixSource.handle + ' — post your take from Record / Upload and your post will credit the original.';
+    show(b);
+  } else hide(b);
+}
 function updateGenBalance() {
   $('gen-balance').textContent = '✦ ' + (S.credits ? S.credits.balance : 0);
 }
@@ -3155,22 +3364,32 @@ function updateGenBalance() {
 var pendingUpload = null;
 function handleUploadFile() {
   var input = $('upload-file');
+  if (!input.files || !input.files.length) return;
+  stageFile(input.files[0]);
+}
+/* Stage any file — picked, camera-recorded or camera-captured — for
+ * posting. Videos probe through a <video> element and are capped at
+ * the server's real upload limit (MAX_VIDEO_SECONDS = 600; the old
+ * 20.5s check was the AI-generation cap leaking into uploads,
+ * QA #17/#15). Photos probe through an <img> and post as mediaType
+ * 'photo', which the server and the native apps already speak. */
+function stageFile(file) {
   var status = $('upload-status');
   var preview = $('upload-preview');
   var postBtn = $('upload-post-btn');
   status.textContent = ''; status.className = 'form-msg';
   preview.innerHTML = ''; hide(preview);
-  hide(postBtn); hide($('upload-progress')); hide($('upload-music-row'));
+  hide(postBtn); hide($('upload-progress')); hide($('upload-music-row')); hide($('upload-options'));
   pendingUpload = null;
-  if (!input.files || !input.files.length) return;
-  var file = input.files[0];
+  if (!file) return;
   var url = URL.createObjectURL(file);
+  if ((file.type || '').indexOf('image/') === 0) { stagePhotoFile(file, url); return; }
   var probe = document.createElement('video');
   probe.preload = 'metadata';
   probe.src = url;
   probe.onloadedmetadata = function () {
     var dur = probe.duration || 0;
-    if (dur > 20.5) {
+    if (dur > 600.5) {
       status.textContent = t('uploadTooLong').replace('{s}', Math.round(dur));
       status.classList.add('error');
       URL.revokeObjectURL(url);
@@ -3180,39 +3399,59 @@ function handleUploadFile() {
     v.src = url; v.controls = true; v.playsInline = true;
     preview.appendChild(v);
     show(preview);
-    var captionGuess = file.name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ');
-    if (!$('upload-caption').value) $('upload-caption').value = captionGuess;
-    if (S.demo || !S.token) {
-      /* Signed out / demo: the preview is device-local only, and the
-       * status line says exactly that — nothing pretends to post. */
-      status.textContent = t('uploadLooksGood').replace('{s}', Math.round(dur)) + ' ' + t('uploadLocalOnly');
-      status.classList.add('ok');
-      var mine = {
-        id: 'local_' + Date.now(), demo: true, local: true, kind: 'upload', sourceUrl: null,
-        localUrl: url, durationSec: Math.round(dur), caption: captionGuess,
-        hashtags: ['mine'], likeCount: 0, commentCount: 0,
-        owner: { id: S.user ? S.user.id : 'me', handle: S.user ? S.user.handle : 'you', displayName: S.user ? S.user.displayName : 'You', creatorLevel: S.user ? S.user.creatorLevel : 1, levelName: levelForLevel(S.user ? S.user.creatorLevel : 1).name }
-      };
-      S.feed = [mine].concat(S.feed);
-      renderFeed();
-      return;
-    }
-    /* Signed in: stage it for a REAL upload (submitUpload). Nothing
-     * is shown in the feed until the server has the file. */
-    pendingUpload = { file: file, durationSec: Math.max(1, Math.round(dur)), caption: captionGuess, busy: false };
-    status.textContent = t('uploadLooksGood').replace('{s}', Math.round(dur)) + ' ' + t('uploadReadyPost');
-    status.classList.add('ok');
-    postBtn.disabled = false;
-    show(postBtn);
-    /* "Add a song" row appears with the Post button (signed-in
-     * uploads only — the song is mixed server-side). */
-    renderMusicRow();
-    show($('upload-music-row'));
+    finishStaging(file, url, Math.max(1, Math.round(dur)), 'video');
   };
   probe.onerror = function () {
     status.textContent = t('uploadNotVideo');
     status.classList.add('error');
   };
+}
+function stagePhotoFile(file, url) {
+  var status = $('upload-status');
+  var preview = $('upload-preview');
+  var img = new Image();
+  img.onload = function () {
+    img.className = 'upload-photo-preview';
+    preview.appendChild(img);
+    show(preview);
+    finishStaging(file, url, 0, 'photo');
+  };
+  img.onerror = function () {
+    status.textContent = t('uploadNotPhoto');
+    status.classList.add('error');
+  };
+  img.src = url;
+}
+/* Shared tail of staging: caption guess, then either the demo-local
+ * insert (device-only, labelled as such) or the signed-in staging
+ * that reveals Post + song (videos) + the post options (audience,
+ * area, map — all fields POST /v1/videos really honors). */
+function finishStaging(file, url, durationSec, kind) {
+  var status = $('upload-status');
+  var postBtn = $('upload-post-btn');
+  var captionGuess = (file.name || '').replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim();
+  if (/^loopi (record|photo)/i.test(captionGuess)) captionGuess = '';
+  if (captionGuess && !$('upload-caption').value) $('upload-caption').value = captionGuess;
+  if (S.demo || !S.token) {
+    status.textContent = (kind === 'photo' ? t('uploadPhotoReady') : t('uploadLooksGood').replace('{s}', durationSec)) + ' ' + t('uploadLocalOnly');
+    status.classList.add('ok');
+    var mine = {
+      id: 'local_' + Date.now(), demo: true, local: true, kind: 'upload', mediaType: kind,
+      sourceUrl: null, localUrl: url, durationSec: durationSec, caption: captionGuess,
+      hashtags: ['mine'], likeCount: 0, commentCount: 0,
+      owner: { id: S.user ? S.user.id : 'me', handle: S.user ? S.user.handle : 'you', displayName: S.user ? S.user.displayName : 'You', creatorLevel: S.user ? S.user.creatorLevel : 1, levelName: levelForLevel(S.user ? S.user.creatorLevel : 1).name }
+    };
+    S.feed = [mine].concat(S.feed);
+    renderFeed();
+    return;
+  }
+  pendingUpload = { file: file, durationSec: durationSec, caption: captionGuess, kind: kind, busy: false };
+  status.textContent = (kind === 'photo' ? t('uploadPhotoReady') : t('uploadLooksGood').replace('{s}', durationSec)) + ' ' + t('uploadReadyPost');
+  status.classList.add('ok');
+  postBtn.disabled = false;
+  show(postBtn);
+  if (kind === 'video') { renderMusicRow(); show($('upload-music-row')); }
+  show($('upload-options'));
 }
 /* XHR twin of api() for moving the file itself: fetch() cannot
  * report upload progress, and the byte transfer is the slow part
@@ -3237,6 +3476,31 @@ function xhrUpload(method, url, file, headers, onProgress) {
       reject(e);
     };
     xhr.send(file);
+  });
+}
+/* "Show on map": when the box is ticked on an Everyone post, ask
+ * for the browser's position ONCE at post time and attach it — the
+ * server rounds it to ~1 km before storing, so no exact spot ever
+ * leaves the device beyond that rounding. Denial or timeout simply
+ * posts without coordinates (the area text still powers Nearby). */
+function withApproxCoords(body) {
+  return new Promise(function (resolve) {
+    var onMap = $('upload-onmap') && $('upload-onmap').checked;
+    if (!onMap || body.visibility !== 'public') { resolve(body); return; }
+    body.showOnMap = true;
+    if (!navigator.geolocation) { resolve(body); return; }
+    var done = false;
+    var timer = setTimeout(function () { if (!done) { done = true; resolve(body); } }, 3000);
+    try {
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        if (done) return; done = true; clearTimeout(timer);
+        body.approxLat = pos.coords.latitude;
+        body.approxLng = pos.coords.longitude;
+        resolve(body);
+      }, function () {
+        if (!done) { done = true; clearTimeout(timer); resolve(body); }
+      }, { timeout: 3000, maximumAge: 600000 });
+    } catch (e) { if (!done) { done = true; clearTimeout(timer); resolve(body); } }
   });
 }
 /* Post the staged file for real:
@@ -3277,12 +3541,23 @@ function submitUpload() {
       { Authorization: 'Bearer ' + S.token, 'Content-Type': fileType }, setProgress)
       .then(function () { return d; });
   }).then(function (d) {
-    return api('/v1/videos', {
-      method: 'POST',
-      body: {
-        sourceUrl: d.sourceUrl, durationSec: staged.durationSec, caption: caption, hashtags: [],
-        musicTrackId: selectedMusic ? selectedMusic.id : undefined
-      }
+    /* Post options (QA #17): every field below is one POST
+     * /v1/videos really honors — visibility ('public'|'friends'),
+     * area (free text the Nearby tab matches), showOnMap with
+     * rounded approxLat/approxLng (public posts only, enforced
+     * server-side too), and restyleOf when this post is a remix. */
+    var body = {
+      sourceUrl: d.sourceUrl, caption: caption, hashtags: [],
+      visibility: ($('upload-visibility') && $('upload-visibility').value === 'friends') ? 'friends' : 'public',
+      musicTrackId: (staged.kind === 'video' && selectedMusic) ? selectedMusic.id : undefined
+    };
+    if (staged.kind === 'photo') body.mediaType = 'photo';
+    else body.durationSec = staged.durationSec;
+    var area = ($('upload-area') ? $('upload-area').value : '').trim();
+    if (area) body.area = area;
+    if (remixSource) { body.restyleOf = remixSource.id; if (caption) body.restylePrompt = caption; }
+    return withApproxCoords(body).then(function (b) {
+      return api('/v1/videos', { method: 'POST', body: b });
     });
   }).then(function (r) {
     hide(bar);
@@ -3298,6 +3573,12 @@ function submitUpload() {
     selectedMusic = null;
     renderMusicRow();
     hide($('upload-music-row'));
+    var visEl = $('upload-visibility'); if (visEl) visEl.value = 'public';
+    var areaEl = $('upload-area'); if (areaEl) areaEl.value = '';
+    var mapEl = $('upload-onmap'); if (mapEl) mapEl.checked = false;
+    var mapNote = $('upload-onmap-note'); if (mapNote) hide(mapNote);
+    hide($('upload-options'));
+    remixSource = null; paintRemixBanner();
     stopMusicPreview();
     toast(video.status === 'pending'
       ? (video.music ? t('uploadMixingToast') : t('uploadCheckingToast'))
@@ -3312,6 +3593,108 @@ function submitUpload() {
     else status.textContent = t('uploadFailed');
     status.classList.add('error');
   });
+}
+
+/* ---------------- camera: record / take photo (QA #17) ----------
+ * getUserMedia drives the preview; MediaRecorder captures video,
+ * a canvas grab captures the photo. Both land in stageFile(), so
+ * camera media gets exactly the same staging, options and posting
+ * path as a picked file. Where the browser has no camera, refuses
+ * permission, or lacks MediaRecorder, the status line says so in
+ * plain words and the file picker remains the way in — nothing
+ * silently no-ops. */
+var camStream = null, camRecorder = null, camChunks = [], camMime = '', camTimer = null, camStartedAt = 0;
+function camStatus(text, isError) {
+  var n = $('camera-status'); if (!n) return;
+  n.textContent = text || '';
+  n.className = 'form-msg' + (isError ? ' error' : '');
+}
+function stopCamTracks() {
+  if (camStream) {
+    camStream.getTracks().forEach(function (tr) { try { tr.stop(); } catch (e) { /* ignore */ } });
+    camStream = null;
+  }
+  var pv = $('camera-preview'); if (pv) pv.srcObject = null;
+  if (camTimer) { clearInterval(camTimer); camTimer = null; }
+}
+function closeCamera() {
+  if (camRecorder && camRecorder.state === 'recording') {
+    /* Closing mid-recording finishes and stages the take. */
+    try { camRecorder.stop(); return; } catch (e) { /* fall through */ }
+  }
+  camRecorder = null; camChunks = [];
+  stopCamTracks();
+  var box = $('camera-box'); if (box) hide(box);
+}
+function openCamera(mode) {
+  closeCamera();
+  show($('camera-box'));
+  $('camera-start').classList.toggle('hidden', mode !== 'video');
+  $('camera-capture').classList.toggle('hidden', mode !== 'photo');
+  $('camera-start').textContent = t('recStart');
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    camStatus(t('cameraUnavailable'), true);
+    return;
+  }
+  camStatus(t('cameraStarting'));
+  navigator.mediaDevices.getUserMedia({ video: true, audio: mode === 'video' }).then(function (stream) {
+    camStream = stream;
+    var pv = $('camera-preview');
+    pv.srcObject = stream; pv.muted = true;
+    var pr = pv.play(); if (pr && pr.catch) pr.catch(function () { /* ignore */ });
+    camStatus(mode === 'video' ? t('cameraReadyVideo') : t('cameraReadyPhoto'));
+  }).catch(function () {
+    camStatus(t('cameraUnavailable'), true);
+  });
+}
+function toggleRecording() {
+  if (camRecorder && camRecorder.state === 'recording') { camRecorder.stop(); return; }
+  if (!camStream) { camStatus(t('cameraUnavailable'), true); return; }
+  if (typeof MediaRecorder === 'undefined') { camStatus(t('recorderUnavailable'), true); return; }
+  camChunks = []; camMime = '';
+  ['video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm'].forEach(function (m) {
+    if (!camMime && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(m)) camMime = m;
+  });
+  try { camRecorder = new MediaRecorder(camStream, camMime ? { mimeType: camMime } : undefined); }
+  catch (e) { camStatus(t('recorderUnavailable'), true); return; }
+  camRecorder.ondataavailable = function (ev) { if (ev.data && ev.data.size) camChunks.push(ev.data); };
+  camRecorder.onstop = function () {
+    if (camTimer) { clearInterval(camTimer); camTimer = null; }
+    var startBtn = $('camera-start'); if (startBtn) startBtn.textContent = t('recStart');
+    var type = camMime || 'video/webm';
+    var blob = new Blob(camChunks, { type: type });
+    camChunks = []; camRecorder = null;
+    stopCamTracks();
+    hide($('camera-box'));
+    if (!blob.size) { toast(t('cameraUnavailable')); return; }
+    var file = new File([blob], 'loopi-record.' + (type.indexOf('mp4') >= 0 ? 'mp4' : 'webm'), { type: type });
+    stageFile(file);
+  };
+  camRecorder.start(250);
+  camStartedAt = Date.now();
+  $('camera-start').textContent = t('recStop') + ' · 0s';
+  camTimer = setInterval(function () {
+    var sec = Math.round((Date.now() - camStartedAt) / 1000);
+    var b = $('camera-start'); if (b) b.textContent = t('recStop') + ' · ' + sec + 's';
+    if (sec >= 600 && camRecorder && camRecorder.state === 'recording') camRecorder.stop();
+  }, 500);
+  camStatus(t('recordingNow'));
+}
+function capturePhoto() {
+  if (!camStream) { camStatus(t('cameraUnavailable'), true); return; }
+  var pv = $('camera-preview');
+  var canvas = document.createElement('canvas');
+  canvas.width = pv.videoWidth || 1280;
+  canvas.height = pv.videoHeight || 720;
+  canvas.getContext('2d').drawImage(pv, 0, 0, canvas.width, canvas.height);
+  if (!canvas.toBlob) { camStatus(t('cameraUnavailable'), true); return; }
+  canvas.toBlob(function (blob) {
+    if (!blob) { camStatus(t('cameraUnavailable'), true); return; }
+    var file = new File([blob], 'loopi-photo.jpg', { type: 'image/jpeg' });
+    stopCamTracks();
+    hide($('camera-box'));
+    stageFile(file);
+  }, 'image/jpeg', 0.92);
 }
 
 /* ---------------- music picker ("Add a song") ----------------
@@ -4629,6 +5012,8 @@ function paintProfile() {
   $('profile-name').textContent = u.displayName;
   $('profile-handle').textContent = '@' + u.handle + (S.demo ? ' · demo' : '');
   $('profile-bio').textContent = u.bio || '';
+  var demoBadge = $('profile-demo-badge'); if (demoBadge) demoBadge.classList.toggle('hidden', !S.demo);
+  var demoNote = $('profile-demo-note'); if (demoNote) demoNote.classList.toggle('hidden', !S.demo);
   var badges = $('profile-badges');
   badges.innerHTML = '';
   userBadges(u).forEach(function (x) { badges.appendChild(el('span', 'badge', x)); });
@@ -6054,6 +6439,20 @@ function wire() {
   $('chemail-confirm').addEventListener('click', submitChangeEmailConfirm);
   $('chhandle-btn').addEventListener('click', submitChangeHandle);
   $('homearea-btn').addEventListener('click', submitHomeArea);
+  /* fix pass 3 wiring: camera create, remix, demo exit, creator
+   * subscribe + creator/payout settings (QA #17/#25/#14) */
+  var recBtn = $('record-btn'); if (recBtn) recBtn.addEventListener('click', function () { openCamera('video'); });
+  var phoBtn = $('photo-btn'); if (phoBtn) phoBtn.addEventListener('click', function () { openCamera('photo'); });
+  var camStart = $('camera-start'); if (camStart) camStart.addEventListener('click', toggleRecording);
+  var camCap = $('camera-capture'); if (camCap) camCap.addEventListener('click', capturePhoto);
+  var camClose = $('camera-close'); if (camClose) camClose.addEventListener('click', closeCamera);
+  var remDet = $('remix-detach'); if (remDet) remDet.addEventListener('click', function () { remixSource = null; paintRemixBanner(); });
+  var demoExit = $('demo-exit-btn'); if (demoExit) demoExit.addEventListener('click', logout);
+  var subBtn = $('creator-subscribe-btn'); if (subBtn) subBtn.addEventListener('click', subscribeToCreator);
+  var pmSel = $('payout-method-select'); if (pmSel) pmSel.addEventListener('change', togglePayoutFields);
+  var poSave = $('payout-save'); if (poSave) poSave.addEventListener('click', savePayoutMethod);
+  var chSave = $('channel-save'); if (chSave) chSave.addEventListener('click', saveChannelSettings);
+  var onMapBox = $('upload-onmap'); if (onMapBox) onMapBox.addEventListener('change', function () { $('upload-onmap-note').classList.toggle('hidden', !this.checked); });
   $('tfa-toggle').addEventListener('change', onTfaToggle);
   $('tfa-submit').addEventListener('click', submitTfa);
   $('tfa-back').addEventListener('click', function () { hide($('tfa-panel')); });

@@ -142,6 +142,11 @@ if (location.pathname === '/app') { location.replace('/app/' + location.search +
 
   <!-- ======================= MAIN ======================= -->
   <section id="screen-main" class="screen hidden">
+    <div id="demo-banner" class="demo-banner hidden">
+      <span class="demo-banner-tag">DEMO</span>
+      <span class="demo-banner-text">Demo mode — sample videos and made-up accounts. Nothing here is a real account.</span>
+      <button id="demo-exit-btn" type="button">Exit demo</button>
+    </div>
 
     <!-- HOME -->
     <div id="panel-home" class="panel">
@@ -280,6 +285,14 @@ if (location.pathname === '/app') { location.replace('/app/' + location.search +
           <button id="creator-share-btn" class="ghost ig-action" data-i18n="share">Share</button>
           <button id="creator-menu-btn" class="ghost ig-action" type="button">⋯ More</button>
         </div>
+        <div id="creator-channel" class="channel-box hidden">
+          <div class="channel-main">
+            <b>Creator channel</b>
+            <p id="creator-channel-line" class="sub"></p>
+          </div>
+          <button id="creator-subscribe-btn" class="primary" type="button">Subscribe</button>
+          <p id="creator-channel-msg" class="form-msg"></p>
+        </div>
         <div id="creator-locked" class="locked-box hidden">
           <div class="locked-ic"><svg class="ic ic-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10.8" width="14" height="9.2" rx="2"/><path d="M8 10.8V8a4 4 0 0 1 8 0v2.8"/><circle cx="12" cy="15.4" r="1.3" fill="currentColor" stroke="none"/></svg></div>
           <b data-i18n="privateAccount">This account is private</b>
@@ -303,7 +316,7 @@ if (location.pathname === '/app') { location.replace('/app/' + location.search +
           </div>
         </div>
         <div class="ig-identity">
-          <div id="profile-name" class="profile-name">—</div>
+          <div class="profile-name-row"><span id="profile-name" class="profile-name">—</span><span id="profile-demo-badge" class="demo-badge hidden">DEMO ACCOUNT</span></div>
           <div id="profile-handle" class="profile-handle">@—</div>
           <p id="profile-bio" class="profile-bio"></p>
           <div id="profile-badges" class="badge-row ig-badges"></div>
@@ -312,6 +325,7 @@ if (location.pathname === '/app') { location.replace('/app/' + location.search +
           <button id="edit-profile-btn" class="ghost ig-action primary-action" data-i18n="editProfile">Edit profile</button>
           <button id="profile-share-btn" class="ghost ig-action" data-i18n="share">Share</button>
         </div>
+        <p id="profile-demo-note" class="demo-note hidden">Demo profile — the follower counts, stats and earnings here are made up for the tour. Exit the demo and create a free account for the real thing.</p>
       </div>
 
       <div class="profile-tabs" role="tablist" aria-label="Profile sections">
@@ -443,6 +457,45 @@ if (location.pathname === '/app') { location.replace('/app/' + location.search +
         <h3 class="section-title">Blocked accounts</h3>
         <div id="blocked-list" class="blocked-list"></div>
         <p id="blocked-msg" class="form-msg"></p>
+      </div>
+      <div class="settings-group" id="creator-settings-group">
+        <h3 class="section-title">Creator &amp; payouts</h3>
+        <p class="sub" id="creator-settings-note">Your earnings balance, where payouts go, and your channel subscription.</p>
+        <p class="sub">Earnings balance: <b id="earn-balance">—</b></p>
+        <div id="earn-history" class="earn-history"></div>
+        <h4 class="settings-sub">Payout method</h4>
+        <p class="sub" id="payout-current">Not set yet</p>
+        <label class="fld"><span>Method</span>
+          <select id="payout-method-select">
+            <option value="paypal">PayPal</option>
+            <option value="bank_transfer">Bank transfer</option>
+          </select></label>
+        <div id="payout-paypal-fields">
+          <label class="fld"><span>PayPal email</span>
+            <input id="payout-paypal-email" type="email" autocomplete="email" placeholder="you@example.com"></label>
+        </div>
+        <div id="payout-bank-fields" class="hidden">
+          <label class="fld"><span>Account holder</span>
+            <input id="payout-bank-holder" type="text" maxlength="120" autocomplete="name"></label>
+          <label class="fld"><span>Bank name</span>
+            <input id="payout-bank-name" type="text" maxlength="120"></label>
+          <label class="fld"><span>Account number / IBAN (blank keeps the one on file)</span>
+            <input id="payout-bank-number" type="text" maxlength="40" autocomplete="off"></label>
+          <label class="fld"><span>Country</span>
+            <input id="payout-bank-country" type="text" maxlength="120" autocomplete="country-name"></label>
+        </div>
+        <button id="payout-save" class="ghost" type="button">Save payout method</button>
+        <p id="payout-msg" class="form-msg"></p>
+        <h4 class="settings-sub">Payout history</h4>
+        <div id="payout-history" class="earn-history"></div>
+        <h4 class="settings-sub">Channel subscription</h4>
+        <p class="sub" id="channel-current">—</p>
+        <label class="fld"><span>Monthly price in credits (blank = no channel)</span>
+          <input id="channel-price" type="number" min="1" max="10000000" step="1" placeholder="e.g. 100"></label>
+        <label class="switch-row"><span>Private channel page (subscribers only)</span>
+          <input id="channel-private" type="checkbox"></label>
+        <button id="channel-save" class="ghost" type="button">Save channel settings</button>
+        <p id="channel-msg" class="form-msg"></p>
       </div>
       <div class="settings-group">
         <h3 class="section-title" data-i18n="about">About</h3>
@@ -806,10 +859,39 @@ if (location.pathname === '/app') { location.replace('/app/' + location.search +
 
       <div class="door">
         <h3><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6.5" width="18" height="12.5" rx="2.5"/><path d="M3 10.5h18M7.5 6.5l2 4M13 6.5l2 4"/></svg> <span data-i18n="recordUpload">Record / Upload</span></h3>
-        <p class="sub" data-i18n="uploadNote">Your own video, up to 20 seconds.</p>
-        <input id="upload-file" type="file" accept="video/*">
+        <p class="sub" data-i18n="uploadNote">Your own video (up to 10 minutes) or a photo — record it here, take a photo, or pick a file.</p>
+        <div id="remix-banner" class="remix-banner hidden">
+          <span id="remix-banner-text"></span>
+          <button id="remix-detach" class="ghost" type="button">✕ Detach</button>
+        </div>
+        <div class="create-actions-row">
+          <button id="record-btn" class="ghost" type="button">● Record video</button>
+          <button id="photo-btn" class="ghost" type="button">Take photo</button>
+        </div>
+        <div id="camera-box" class="camera-box hidden">
+          <video id="camera-preview" autoplay playsinline muted></video>
+          <div class="camera-controls">
+            <button id="camera-start" class="primary" type="button">Start recording</button>
+            <button id="camera-capture" class="primary hidden" type="button">Capture photo</button>
+            <button id="camera-close" class="ghost" type="button">Close camera</button>
+          </div>
+          <p id="camera-status" class="form-msg"></p>
+        </div>
+        <input id="upload-file" type="file" accept="video/*,image/*">
         <div id="upload-preview" class="upload-preview hidden"></div>
         <input id="upload-caption" type="text" maxlength="300" placeholder="Add a caption…">
+        <div id="upload-options" class="upload-options hidden">
+          <label class="fld"><span>Who can watch</span>
+            <select id="upload-visibility">
+              <option value="public">Everyone</option>
+              <option value="friends">Friends only</option>
+            </select></label>
+          <label class="fld"><span>Area (optional — powers the Nearby tab)</span>
+            <input id="upload-area" type="text" maxlength="60" placeholder="e.g. Vernon"></label>
+          <label class="switch-row"><span>Show on map (approximate location)</span>
+            <input id="upload-onmap" type="checkbox"></label>
+          <p id="upload-onmap-note" class="sub hidden">When you post we ask for your location and round it to roughly the nearest kilometre — never your exact spot. Map pinning needs an Everyone post.</p>
+        </div>
         <button id="upload-music-row" class="music-row hidden" type="button">
           <span class="music-row-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 18.4V6.2L19.5 4.2v11.6"/><circle cx="6.8" cy="18.4" r="2.7"/><circle cx="16.8" cy="15.8" r="2.7"/></svg></span>
           <span class="music-row-main">
